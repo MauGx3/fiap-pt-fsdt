@@ -1,36 +1,39 @@
 {
-    "name": "fiap-pt-fsdt",
-    "version": "1.0.0",
-    "description": "FIAP TypeScript Project",
-    "main": "index.js",
-    "scripts": {
-        "install:backend": "cd tech_challenge1/backend && npm install",
-        "build": "cd tech_challenge1/backend && npm run build",
-        "start": "cd tech_challenge1/backend && npm start",
-        "test": "cd tech_challenge1/backend && npm test",
-        "test:ci": "cd tech_challenge1/backend && npm run test:ci",
-        "test:coverage": "cd tech_challenge1/backend && npm run test:coverage",
-        "lint": "cd tech_challenge1/backend && npm run lint"
-    },
-    "engines": {
-        "node": ">=18.0.0",
-        "npm": ">=8.0.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/MauGx3/fiap-pt-fsdt.git"
-    },
-    "keywords": [
-        "typescript",
-        "nodejs",
-        "fiap",
-        "backend"
-    ],
-    "author": "FIAP Student",
-    "license": "MIT",
-    "dependencies": {},
-    "devDependencies": {},
-    "workspaces": [
-        "tech_challenge1/backend"
-    ]
+  "name": "fiap-pt-fsdt",
+  "version": "1.0.0",
+  "description": "FIAP TypeScript Project",
+  "main": "index.js",
+  "scripts": {
+    "install:backend": "cd tech_challenge1/backend && npm install",
+    "build": "cd tech_challenge1/backend && npm run build",
+    "start": "cd tech_challenge1/backend && npm start",
+    "test": "cd tech_challenge1/backend && npm test",
+    "test:ci": "cd tech_challenge1/backend && npm run test:ci",
+    "test:coverage": "cd tech_challenge1/backend && npm run test:coverage",
+    "lint": "cd tech_challenge1/backend && npm run lint",
+    "prepare": "husky"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MauGx3/fiap-pt-fsdt.git"
+  },
+  "keywords": [
+    "typescript",
+    "nodejs",
+    "fiap",
+    "backend"
+  ],
+  "author": "FIAP Student",
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2"
+  },
+  "workspaces": [
+    "tech_challenge1/backend"
+  ]
 }
