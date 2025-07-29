@@ -4,7 +4,7 @@ import { randomUUID } from 'crypto';
 
 const userSchema = new Schema({
     uuid: {
-        type: 'UUID',
+        type: String,
         default: () => randomUUID(),
         index: true,
         unique: true

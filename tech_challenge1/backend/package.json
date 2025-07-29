@@ -7,7 +7,17 @@
     "start": "node index.js",
     "dev": "node --watch index.js",
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:watch": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --watch",
+    "test:coverage": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
+    "test:unit": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest tests/models tests/middleware tests/controllers",
+    "test:integration": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest tests/routes tests/integration",
+    "test:auth": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest tests/middleware/auth.test.js tests/routes/auth.test.js",
+    "test:posts": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest tests/models/Post.test.js tests/routes/posts.test.js tests/controllers/posts.test.js",
+    "test:users": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest tests/models/User.test.js tests/routes/users.test.js",
+    "test:script": "node test-runner.js",
+    "test:verbose": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
+    "test:silent": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --silent"
   },
   "keywords": [
     "blog",
@@ -29,7 +39,11 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
+    "mongodb-memory-server": "^9.1.6",
+    "@jest/globals": "^29.7.0"
   },
   "engines": {
     "node": ">=18.0.0"

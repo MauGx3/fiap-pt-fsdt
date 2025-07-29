@@ -10,11 +10,15 @@ if (!JWT_SECRET) {
 
 // Utility function to generate JWT token
 export function generateToken(user) {
+    // Include current timestamp in milliseconds to ensure uniqueness
+    const currentTime = Math.floor(Date.now() / 1000);
+    
     return jwt.sign(
         {
             uuid: user.uuid,
             email: user.email,
-            role: user.role
+            role: user.role,
+            iat: currentTime  // Explicitly set issued at time
         },
         JWT_SECRET,
         {
