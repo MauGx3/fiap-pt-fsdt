@@ -4,11 +4,32 @@
     "description": "FIAP TypeScript Project",
     "main": "index.js",
     "scripts": {
-  "test": "cd tech_challenge1/backend && npm test"
+        "install:backend": "cd tech_challenge1/backend && npm install",
+        "build": "cd tech_challenge1/backend && npm run build",
+        "start": "cd tech_challenge1/backend && npm start",
+        "test": "cd tech_challenge1/backend && npm test",
+        "test:coverage": "cd tech_challenge1/backend && npm run test:coverage",
+        "lint": "cd tech_challenge1/backend && npm run lint"
     },
-    "dependencies": {
-        "bcrypt": "^6.0.0",
-        "mongoose": "^8.16.4",
-        "typescript": "^5.4.2"
-    }
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MauGx3/fiap-pt-fsdt.git"
+    },
+    "keywords": [
+        "typescript",
+        "nodejs",
+        "fiap",
+        "backend"
+    ],
+    "author": "FIAP Student",
+    "license": "MIT",
+    "dependencies": {},
+    "devDependencies": {},
+    "workspaces": [
+        "tech_challenge1/backend"
+    ]
 }
