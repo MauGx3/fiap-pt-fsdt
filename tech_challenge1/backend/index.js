@@ -5,6 +5,7 @@ import { connect } from 'mongoose';
 // Route imports
 import postsRoutes from './routes/posts.js';
 import usersRoutes from './routes/users.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,8 +15,9 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 app.use(json({ limit: '10mb' })); // Add payload size limit
 
 // Routes
-app.use('/api/posts', postsRoutes); // Consider adding /api prefix
-app.use('/api/users', usersRoutes);
+app.use('/api/auth', authRoutes); // Authentication routes
+app.use('/api/posts', postsRoutes); // Posts routes  
+app.use('/api/users', usersRoutes); // User management routes
 
 // Health check endpoint
 app.get('/health', (req, res) => {

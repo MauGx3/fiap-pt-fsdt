@@ -1,5 +1,5 @@
-import Post from './models/Post';
-import User from './models/User';
+import Post from './models/Post.js';
+import User from './models/User.js';
 
 export async function getAllPosts(req, res) {
     try {
@@ -31,76 +31,104 @@ export async function createPost(req, res) {
             });
         }
 
-        // Get author UUID from authenticated user (if using middleware)
-        // Or from request body (if not using authentication middleware)
-        let author = req.user?.uuid || req.body.author;
+        // Use authenticated user's UUID as author
+        const author = req.user.uuid;
 
-        if (!author) {
-            return res.status(400).json({
-                error: 'Author UUID is required'
-            });
-        }
+        const newPost = new Post({
+            title,
+            content,
+            author
+        });
 
-        // If author comes from request body, validate/convert it
-        if (!req.user) {
-            // Check if author is a UUID format
-            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-            if (uuidRegex.test(author)) {
-                // It's a UUID, validate it exists
-                const user = await User.findOne({ uuid: author });
-                if (!user) {
-                    return res.status(400).json({
-                        error: 'Invalid author UUID - user not found'
-                    });
-                }
-            } else {
-                // It's not a UUID, try to find user by name
-                const user = await User.findOne({ name: author });
-                if (!user) {
-                    return res.status(400).json({
-                        error: `User with name "${author}" not found. Please provide a valid UUID or ensure the user exists.`
-                    });
-                }
-                // Use the user's UUID
-                author = user.uuid;
-            }
-        }
-
-        const newPost = new Post({ title, content, author });
         await newPost.save();
-        res.status(201).json(newPost);
+
+        res.status(201).json({
+            message: 'Post created successfully',
+            post: newPost
+        });
     } catch (err) {
         if (err.name === 'ValidationError') {
             return res.status(400).json({
                 error: 'Validation failed: ' + err.message
             });
         }
+        console.error('Create post error:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
 
 export async function updatePost(req, res) {
     try {
-        const post = await Post.findByIdAndUpdate(
-            req.params.id,
-            { $set: req.body },
+        const postId = req.params.id;
+        const { title, content } = req.body;
+
+        // Find the post first to check ownership
+        const existingPost = await Post.findById(postId);
+        if (!existingPost) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        // Check if user owns the post or is admin
+        if (existingPost.author !== req.user.uuid && req.user.role !== 'admin') {
+            return res.status(403).json({
+                error: 'Access denied. You can only update your own posts.'
+            });
+        }
+
+        // Prepare update data
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (content) updateData.content = content;
+        updateData.updatedAt = new Date();
+
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId,
+            { $set: updateData },
             { new: true, runValidators: true }
         );
-        if (!post) return res.status(404).json({ error: 'Post not found' });
-        res.json(post);
+
+        res.json({
+            message: 'Post updated successfully',
+            post: updatedPost
+        });
     } catch (err) {
-        res.status(400).json({ error: 'Invalid ID or data format' });
+        if (err.name === 'CastError') {
+            return res.status(400).json({ error: 'Invalid post ID format' });
+        }
+        console.error('Update post error:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
 
 export async function deletePost(req, res) {
     try {
-        const deleted = await Post.findByIdAndDelete(req.params.id);
-        if (!deleted) return res.status(404).json({ error: 'Post not found' });
-        res.json(deleted);
+        const postId = req.params.id;
+
+        // Find the post first to check ownership
+        const existingPost = await Post.findById(postId);
+        if (!existingPost) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        // Check if user owns the post or is admin
+        if (existingPost.author !== req.user.uuid && req.user.role !== 'admin') {
+            return res.status(403).json({
+                error: 'Access denied. You can only delete your own posts.'
+            });
+        }
+
+        const deletedPost = await Post.findByIdAndDelete(postId);
+
+        res.json({
+            message: 'Post deleted successfully',
+            post: deletedPost
+        });
     } catch (err) {
-        res.status(400).json({ error: 'Invalid ID format' });
+        if (err.name === 'CastError') {
+            return res.status(400).json({ error: 'Invalid post ID format' });
+        }
+        console.error('Delete post error:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
 
