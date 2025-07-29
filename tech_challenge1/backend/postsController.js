@@ -5,7 +5,7 @@ export async function getAllPosts(req, res) {
         const posts = await Post.find();
         res.json(posts);
     } catch (_err) {
-        res.status(500).json({ error: 'Failed to fetch posts' });
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
 
@@ -132,15 +132,20 @@ export async function deletePost(req, res) {
 }
 
 export async function searchPosts(req, res) {
-    const query = req.query.query?.toLowerCase();
-    if (!query) return res.status(400).json({ error: 'Missing query parameter' });
+    try {
+        const query = req.query.query?.toLowerCase();
+        if (!query) return res.status(400).json({ error: 'Missing query parameter' });
 
-    const posts = await Post.find({
-        $or: [
-            { title: { $regex: query, $options: 'i' } },
-            { content: { $regex: query, $options: 'i' } }
-        ]
-    });
+        const posts = await Post.find({
+            $or: [
+                { title: { $regex: query, $options: 'i' } },
+                { content: { $regex: query, $options: 'i' } }
+            ]
+        });
 
-    res.json(posts);
+        res.json(posts);
+    } catch (err) {
+        console.error('Search posts error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 }
