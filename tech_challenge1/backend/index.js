@@ -21,50 +21,50 @@ app.use('/api/users', usersRoutes); // User management routes
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
 // 404 handler
 app.use('*', (req, res) => {
-    res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ error: 'Route not found' });
 });
 
 // Global error handler
 app.use((err, req, res, _next) => {
-    console.error('Error:', err);
-    res.status(err.status || 500).json({
-        error: NODE_ENV === 'production' ? 'Internal server error' : err.message
-    });
+  console.error('Error:', err);
+  res.status(err.status || 500).json({
+    error: NODE_ENV === 'production' ? 'Internal server error' : err.message
+  });
 });
 
 // Database connection and server startup
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
-    console.error('❌ MONGO_URI environment variable not set.');
-    process.exit(1);
+  console.error('❌ MONGO_URI environment variable not set.');
+  process.exit(1);
 }
 
 const startServer = async () => {
-    try {
-        await connect(MONGO_URI);
-        console.log('✅ Connected to MongoDB');
+  try {
+    await connect(MONGO_URI);
+    console.log('✅ Connected to MongoDB');
 
-        const server = app.listen(PORT, () => {
-            console.log(`🚀 Server running at http://localhost:${PORT}`);
-            console.log(`📝 Environment: ${NODE_ENV}`);
-        });
+    const server = app.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+      console.log(`📝 Environment: ${NODE_ENV}`);
+    });
 
-        // Graceful shutdown
-        process.on('SIGTERM', () => {
-            console.log('SIGTERM received. Shutting down gracefully...');
-            server.close(() => {
-                console.log('Process terminated');
-            });
-        });
-    } catch (err) {
-        console.error('❌ Failed to start server:', err);
-        process.exit(1);
-    }
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('SIGTERM received. Shutting down gracefully...');
+      server.close(() => {
+        console.log('Process terminated');
+      });
+    });
+  } catch (err) {
+    console.error('❌ Failed to start server:', err);
+    process.exit(1);
+  }
 };
 
 startServer();
