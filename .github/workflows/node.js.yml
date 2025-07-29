@@ -35,5 +35,8 @@ jobs:
       run: npm run build --if-present
     - name: Run tests
       run: npm test
+      env:
+        JWT_SECRET: test-jwt-secret-key-for-testing-only
+        NODE_ENV: test
     - name: Run linting
       run: npm run lint --if-present
