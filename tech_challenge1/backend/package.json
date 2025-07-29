@@ -19,8 +19,7 @@
     "test:users": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest tests/models/User.test.js tests/routes/users.test.js",
     "test:script": "node test-runner.js",
     "test:verbose": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
-    "test:silent": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --silent",
-    "prepare": "husky"
+    "test:silent": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules' jest --silent"
   },
   "keywords": [
     "blog",
