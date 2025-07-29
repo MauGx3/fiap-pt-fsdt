@@ -1,12 +1,12 @@
-const express = require('express');
-const mongoose = require('mongoose');
+import express, { json } from 'express';
+import { connect } from 'mongoose';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(json());
 
-const postsRoutes = require('./routes/posts');
-const usersRoutes = require('./routes/users');
+import postsRoutes from './routes/posts';
+import usersRoutes from './routes/users';
 app.use('/posts', postsRoutes);
 app.use('/users', usersRoutes);
 
@@ -15,7 +15,7 @@ if (!process.env.MONGO_URI) {
     process.exit(1);
 }
 
-mongoose.connect(process.env.MONGO_URI)
+connect(process.env.MONGO_URI)
     .then(() => {
         console.log('Connected to MongoDB');
         app.listen(PORT, () => {

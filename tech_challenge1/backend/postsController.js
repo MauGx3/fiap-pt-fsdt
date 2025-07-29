@@ -1,16 +1,16 @@
-const Post = require('./models/Post');
-const User = require('./models/User');
+import Post from './models/Post';
+import User from './models/User';
 
-exports.getAllPosts = async (req, res) => {
+export async function getAllPosts(req, res) {
     try {
         const posts = await Post.find();
         res.json(posts);
     } catch (err) {
         res.status(500).json({ error: 'Internal server error' });
     }
-};
+}
 
-exports.getPostById = async (req, res) => {
+export async function getPostById(req, res) {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) return res.status(404).json({ error: 'Post not found' });
@@ -18,9 +18,9 @@ exports.getPostById = async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: 'Invalid ID format' });
     }
-};
+}
 
-exports.createPost = async (req, res) => {
+export async function createPost(req, res) {
     try {
         const { title, content } = req.body;
 
@@ -78,9 +78,9 @@ exports.createPost = async (req, res) => {
         }
         res.status(500).json({ error: 'Internal server error' });
     }
-};
+}
 
-exports.updatePost = async (req, res) => {
+export async function updatePost(req, res) {
     try {
         const post = await Post.findByIdAndUpdate(
             req.params.id,
@@ -92,9 +92,9 @@ exports.updatePost = async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: 'Invalid ID or data format' });
     }
-};
+}
 
-exports.deletePost = async (req, res) => {
+export async function deletePost(req, res) {
     try {
         const deleted = await Post.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ error: 'Post not found' });
@@ -102,9 +102,9 @@ exports.deletePost = async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: 'Invalid ID format' });
     }
-};
+}
 
-exports.searchPosts = async (req, res) => {
+export async function searchPosts(req, res) {
     const query = req.query.query?.toLowerCase();
     if (!query) return res.status(400).json({ error: 'Missing query parameter' });
 
@@ -116,4 +116,4 @@ exports.searchPosts = async (req, res) => {
     });
 
     res.json(posts);
-};
+}

@@ -1,8 +1,8 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+import { verify } from 'jsonwebtoken';
+import { findOne } from '../models/User';
 
 // Middleware to authenticate and extract user UUID from JWT token
-exports.authenticateUser = async (req, res, next) => {
+export async function authenticateUser(req, res, next) {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
 
@@ -13,8 +13,8 @@ exports.authenticateUser = async (req, res, next) => {
         if (!process.env.JWT_SECRET) {
             throw new Error('JWT_SECRET environment variable is not set.');
         }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findOne({ uuid: decoded.uuid });
+        const decoded = verify(token, process.env.JWT_SECRET);
+        const user = await findOne({ uuid: decoded.uuid });
 
         if (!user) {
             return res.status(401).json({ error: 'Invalid token - user not found.' });

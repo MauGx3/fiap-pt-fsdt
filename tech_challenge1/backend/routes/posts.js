@@ -1,13 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const {
-    getAllPosts,
-    getPostById,
-    createPost,
-    updatePost,
-    deletePost,
-    searchPosts
-} = require('../postsController');
+import { Router } from 'express';
+const router = Router();
+import { getAllPosts, getPostById, createPost, updatePost, deletePost, searchPosts } from '../postsController';
 // Uncomment the line below if you want to use authentication middleware
 // const { authenticateUser } = require('../middleware/auth');
 
@@ -21,4 +14,4 @@ router.post('/', createPost);
 router.put('/:id', updatePost);
 router.delete('/:id', deletePost);
 
-module.exports = router;
+export default router;

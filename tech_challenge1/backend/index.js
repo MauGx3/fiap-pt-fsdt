@@ -1,14 +1,14 @@
 // index.js
-const express = require('express');
-const mongoose = require('mongoose');
-const postsRoutes = require('./routes/posts');
-const usersRoutes = require('./routes/users');
+import express, { json } from 'express';
+import { connect } from 'mongoose';
+import postsRoutes from './routes/posts';
+import usersRoutes from './routes/users';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware must be defined BEFORE routes
-app.use(express.json());
+app.use(json());
 
 // Routes
 app.use('/posts', postsRoutes);
@@ -20,7 +20,7 @@ if (!MONGO_URI) {
     process.exit(1);
 }
 
-mongoose.connect(MONGO_URI)
+connect(MONGO_URI)
     .then(() => {
         console.log('✅ Connected to MongoDB');
         app.listen(PORT, () => {
