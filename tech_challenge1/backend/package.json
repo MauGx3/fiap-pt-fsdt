@@ -9,10 +9,10 @@
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["blog", "api", "express", "mongodb"],
+  "keywords": ["blog", "api", "express", "mongodb", "jwt", "authentication"],
   "author": "",
   "license": "ISC",
-  "description": "Basic blog backend API with Express and MongoDB",
+  "description": "Basic blog backend API with Express, MongoDB and JWT authentication",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bson": "^6.10.4",
@@ -23,5 +23,19 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "env": {
+    "required": [
+      "MONGO_URI",
+      "JWT_SECRET"
+    ],
+    "optional": [
+      "JWT_EXPIRES_IN",
+      "NODE_ENV",
+      "PORT"
+    ]
   }
 }

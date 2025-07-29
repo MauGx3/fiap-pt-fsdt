@@ -1,25 +1,62 @@
-import { verify } from 'jsonwebtoken';
-import { findOne } from '../models/User';
+import { verify, sign } from 'jsonwebtoken';
+import User from '../models/User.js';
 
-// Middleware to authenticate and extract user UUID from JWT token
+// Validate JWT_SECRET exists
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    console.error('❌ JWT_SECRET environment variable not set.');
+    process.exit(1);
+}
+
+// Utility function to generate JWT token
+export function generateToken(user) {
+    return sign(
+        {
+            uuid: user.uuid,
+            email: user.email,
+            role: user.role
+        },
+        JWT_SECRET,
+        {
+            expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+            issuer: 'blog-api',
+            subject: user.uuid
+        }
+    );
+}
+
+// Middleware to authenticate and extract user data from JWT token
 export async function authenticateUser(req, res, next) {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        // Extract token from Authorization header
+        const authHeader = req.header('Authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                error: 'Access denied. No valid authorization header provided.'
+            });
+        }
+
+        const token = authHeader.replace('Bearer ', '');
 
         if (!token) {
-            return res.status(401).json({ error: 'Access denied. No token provided.' });
+            return res.status(401).json({
+                error: 'Access denied. No token provided.'
+            });
         }
 
-        if (!process.env.JWT_SECRET) {
-            throw new Error('JWT_SECRET environment variable is not set.');
-        }
-        const decoded = verify(token, process.env.JWT_SECRET);
-        const user = await findOne({ uuid: decoded.uuid });
+        // Verify token
+        const decoded = verify(token, JWT_SECRET);
+
+        // Find user by UUID from token
+        const user = await User.findOne({ uuid: decoded.uuid }).select('-password');
 
         if (!user) {
-            return res.status(401).json({ error: 'Invalid token - user not found.' });
+            return res.status(401).json({
+                error: 'Invalid token - user not found.'
+            });
         }
 
+        // Attach user to request object
         req.user = {
             uuid: user.uuid,
             name: user.name,
@@ -29,6 +66,36 @@ export async function authenticateUser(req, res, next) {
 
         next();
     } catch (err) {
-        res.status(401).json({ error: 'Invalid token.' });
+        console.error('Authentication error:', err.message);
+
+        // Handle specific JWT errors
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({ error: 'Token has expired.' });
+        }
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({ error: 'Invalid token format.' });
+        }
+        if (err.name === 'NotBeforeError') {
+            return res.status(401).json({ error: 'Token not active yet.' });
+        }
+
+        res.status(401).json({ error: 'Authentication failed.' });
     }
+}
+
+// Optional middleware to check specific roles
+export function requireRole(...roles) {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({ error: 'Authentication required.' });
+        }
+
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                error: `Access denied. Required role: ${roles.join(' or ')}`
+            });
+        }
+
+        next();
+    };
 }
