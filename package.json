@@ -8,6 +8,7 @@
         "build": "cd tech_challenge1/backend && npm run build",
         "start": "cd tech_challenge1/backend && npm start",
         "test": "cd tech_challenge1/backend && npm test",
+        "test:ci": "cd tech_challenge1/backend && npm run test:ci",
         "test:coverage": "cd tech_challenge1/backend && npm run test:coverage",
         "lint": "cd tech_challenge1/backend && npm run lint"
     },

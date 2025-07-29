@@ -37,7 +37,19 @@ export default {
   },
 
   // Verbose output
-  verbose: true,
+  verbose: false,
+
+  // Max workers for CI
+  maxWorkers: process.env.CI ? 2 : '50%',
+
+  // Test timeout
+  testTimeout: process.env.CI ? 30000 : 10000,
+
+  // Force exit to prevent hanging
+  forceExit: true,
+
+  // Detect open handles in CI
+  detectOpenHandles: process.env.CI ? true : false,
 
   // Transform ignore patterns for ES modules
   transformIgnorePatterns: [

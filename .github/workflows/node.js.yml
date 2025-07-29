@@ -29,14 +29,28 @@ jobs:
         cache-dependency-path: |
           package-lock.json
           tech_challenge1/backend/package-lock.json
-    - name: Install dependencies
-      run: npm ci
+    - name: Cache MongoDB binaries
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/mongodb-binaries
+        key: ${{ runner.os }}-mongodb-binaries-6.0.14
+        restore-keys: |
+          ${{ runner.os }}-mongodb-binaries-
+    - name: Install root dependencies
+      run: npm install
+    - name: Install backend dependencies
+      run: cd tech_challenge1/backend && npm install
     - name: Build backend
       run: npm run build --if-present
     - name: Run tests
-      run: npm test
+      run: npm run test:ci
       env:
         JWT_SECRET: test-jwt-secret-key-for-testing-only
         NODE_ENV: test
+        MONGOMS_DOWNLOAD_DIR: ~/.cache/mongodb-binaries
+        MONGOMS_VERSION: 6.0.14
+        MONGOMS_DISABLE_POSTINSTALL: 1
+        CI: true
+      timeout-minutes: 10
     - name: Run linting
       run: npm run lint --if-present
