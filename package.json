@@ -33,6 +33,12 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2"
   },
+  "lint-staged": {
+    "tech_challenge1/backend/**/*.js": [
+      "cd tech_challenge1/backend && npm run lint -- --fix",
+      "cd tech_challenge1/backend && npm test -- --passWithNoTests"
+    ]
+  },
   "workspaces": [
     "tech_challenge1/backend"
   ]
