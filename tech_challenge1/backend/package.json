@@ -9,14 +9,21 @@
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["blog", "api", "express", "mongodb", "jwt", "authentication"],
+  "keywords": [
+    "blog",
+    "api",
+    "express",
+    "mongodb",
+    "jwt",
+    "authentication"
+  ],
   "author": "",
   "license": "ISC",
   "description": "Basic blog backend API with Express, MongoDB and JWT authentication",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bson": "^6.10.4",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4",
     "uuid": "^11.1.0"

@@ -1,4 +1,4 @@
-import { verify, sign } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
 // Validate JWT_SECRET exists
@@ -10,7 +10,7 @@ if (!JWT_SECRET) {
 
 // Utility function to generate JWT token
 export function generateToken(user) {
-    return sign(
+    return jwt.sign(
         {
             uuid: user.uuid,
             email: user.email,
@@ -45,7 +45,7 @@ export async function authenticateUser(req, res, next) {
         }
 
         // Verify token
-        const decoded = verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
 
         // Find user by UUID from token
         const user = await User.findOne({ uuid: decoded.uuid }).select('-password');
