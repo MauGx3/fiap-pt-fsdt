@@ -4,7 +4,7 @@
     "description": "FIAP TypeScript Project",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+  "test": "cd tech_challenge1/backend && npm test"
     },
     "dependencies": {
         "bcrypt": "^6.0.0",
