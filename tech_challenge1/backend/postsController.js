@@ -1,12 +1,11 @@
 import Post from './models/Post.js';
-import User from './models/User.js';
 
 export async function getAllPosts(req, res) {
     try {
         const posts = await Post.find();
         res.json(posts);
-    } catch (err) {
-        res.status(500).json({ error: 'Internal server error' });
+    } catch (_err) {
+        res.status(500).json({ error: 'Failed to fetch posts' });
     }
 }
 
