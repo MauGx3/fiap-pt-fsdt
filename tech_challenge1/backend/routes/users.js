@@ -8,14 +8,33 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validate input types to prevent NoSQL injection
+    if (email && typeof email !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid email format'
+      });
+    }
+    if (password && typeof password !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid password format'
+      });
+    }
+
     if (!email || !password) {
       return res.status(400).json({
         error: 'Email and password are required'
       });
     }
 
+    // Validate email is a string to prevent NoSQL injection
+    if (typeof email !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid email format'
+      });
+    }
+
     // Find user by email
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: { $eq: email.toLowerCase() } });
     if (!user) {
       return res.status(401).json({
         error: 'Invalid email or password'
@@ -91,13 +110,32 @@ router.put('/me', authenticateUser, async (req, res) => {
     const { name, email } = req.body;
     const updateData = {};
 
+    // Validate input types to prevent NoSQL injection
+    if (name && typeof name !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid name format'
+      });
+    }
+    if (email && typeof email !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid email format'
+      });
+    }
+
     if (name) updateData.name = name;
     if (email) updateData.email = email.toLowerCase();
 
     // Check if email is already taken by another user
     if (email) {
+      // Validate email is a string to prevent NoSQL injection
+      if (typeof email !== 'string') {
+        return res.status(400).json({
+          error: 'Invalid email format'
+        });
+      }
+
       const existingUser = await User.findOne({
-        email: email.toLowerCase(),
+        email: { $eq: email.toLowerCase() },
         uuid: { $ne: req.user.uuid } // Exclude current user
       });
 
@@ -143,6 +181,18 @@ router.put('/me/password', authenticateUser, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
+    // Validate input types to prevent NoSQL injection
+    if (currentPassword && typeof currentPassword !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid current password format'
+      });
+    }
+    if (newPassword && typeof newPassword !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid new password format'
+      });
+    }
+
     if (!currentPassword || !newPassword) {
       return res.status(400).json({
         error: 'Current password and new password are required'
@@ -186,6 +236,23 @@ router.put('/me/password', authenticateUser, async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+
+    // Validate input types to prevent NoSQL injection
+    if (name && typeof name !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid name format'
+      });
+    }
+    if (password && typeof password !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid password format'
+      });
+    }
+    if (role && typeof role !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid role format'
+      });
+    }
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -250,7 +317,12 @@ router.get('/', async (req, res) => {
 // Get user by UUID
 router.get('/:uuid', async (req, res) => {
   try {
-    const user = await User.findOne({ uuid: req.params.uuid }, '-password');
+    // Validate UUID is a string to prevent NoSQL injection
+    if (typeof req.params.uuid !== 'string') {
+      return res.status(400).json({ error: 'Invalid UUID format' });
+    }
+
+    const user = await User.findOne({ uuid: { $eq: req.params.uuid } }, '-password');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
