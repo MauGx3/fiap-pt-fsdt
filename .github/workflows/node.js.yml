@@ -51,7 +51,3 @@ jobs:
       timeout-minutes: 10
     - name: Run linting
       run: npm run lint --if-present --fix
-
-    cache-dependency-path: |
-      package-lock.json
-      tech_challenge1/backend/package-lock.json
