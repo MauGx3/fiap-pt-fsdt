@@ -1,8 +1,10 @@
-# FIAP Tech Challenge - Blog API
+# FIAP Tech Challenge Fase 2
 
 Uma API simples de blog construída com Express.js, MongoDB e autenticação JWT.
 
-## 🚀 Rotas Disponíveis
+A API está disponível também através do Render pela URL [https://fiap-pt-fsdt.onrender.com](https://fiap-pt-fsdt.onrender.com).
+
+## Rotas Disponíveis
 
 ### Autenticação
 
@@ -16,18 +18,18 @@ Uma API simples de blog construída com Express.js, MongoDB e autenticação JWT
 - `GET /api/posts/search` - Buscar posts (público)
 - `POST /api/posts` - Criar novo post (requer autenticação)
 - `PUT /api/posts/:id` - Atualizar post (requer autenticação)
-- `DELETE /api/posts/:id` - Deletar post (requer autenticação - admin/author)
+- `DELETE /api/posts/:id` - Deletar post (requer autenticação - admin/autor)
 
 ### Usuários
 
 - `POST /api/users/login` - Login de usuário
-- Outras rotas de gerenciamento de usuários (requer autenticação)
+- Outras rotas de gerenciamento de usuários (requerem autenticação)
 
 ### Utilitários
 
 - `GET /health` - Health check da API
 
-## 🧪 Testes
+## Testes
 
 Os testes foram integrados usando Jest e SuperTest, organizados em:
 
@@ -37,24 +39,7 @@ Os testes foram integrados usando Jest e SuperTest, organizados em:
 - **Integration Tests**: Testes de integração para rotas e funcionalidades completas
 - **Test Scripts**: Scripts customizados para diferentes cenários
 
-### Scripts de Teste Disponíveis
-
-```bash
-npm test              # Executa todos os testes
-npm run test:watch    # Executa testes em modo watch
-npm run test:coverage # Executa testes com relatório de cobertura
-npm run test:unit     # Executa apenas testes unitários
-npm run test:integration # Executa apenas testes de integração
-npm run test:ci       # Executa testes para CI/CD
-```
-
-### Tecnologias de Teste
-
-- **Jest**: Framework de testes
-- **SuperTest**: Testes de API HTTP
-- **MongoDB Memory Server**: Banco de dados em memória para testes
-
-## ⚙️ Workflows GitHub Actions
+## Workflows GitHub Actions
 
 O repositório possui 3 workflows configurados:
 
@@ -64,14 +49,14 @@ O repositório possui 3 workflows configurados:
 - **Ações**:
   - Testa em múltiplas versões do Node.js (18.x, 20.x, 22.x)
   - Instala dependências e executa testes
-  - Cache para MongoDB binaries
+  - Cache para MongoDB
 
 ### 2. Docker Image CI (`docker-image.yml`)
 
 - **Trigger**: Push e PR para branch `main`
 - **Ações**:
-  - Testa aplicação em container Docker
-  - Build e validação de imagens Docker
+  - Testa container Docker
+  - Build e validação da imagem do Docker
 
 ### 3. CodeQL Advanced (`codeql.yml`)
 
@@ -80,7 +65,7 @@ O repositório possui 3 workflows configurados:
   - Análise estática de segurança do código
   - Detecção de vulnerabilidades
 
-## 🛠️ Como Executar
+## Como Executar
 
 ```bash
 # Instalar dependências
@@ -97,7 +82,7 @@ npm test
 docker-compose up
 ```
 
-## 📝 Variáveis de Ambiente
+## Variáveis de Ambiente
 
 - `MONGO_URI`: URI de conexão com MongoDB
 - `JWT_SECRET`: Chave secreta para JWT
