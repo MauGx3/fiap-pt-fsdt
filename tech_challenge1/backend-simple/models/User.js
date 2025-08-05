@@ -24,7 +24,7 @@ const userSchema = new Schema({
   }
 }, { timestamps: true });
 
-// Index for better performance
-userSchema.index({ email: 1 });
+// Note: email index is automatically created by unique: true
+// uuid index is automatically created by index: true
 
 export default model('User', userSchema);
