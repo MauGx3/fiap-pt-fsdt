@@ -2,11 +2,12 @@
   "name": "fiap-pt-fsdt",
   "version": "1.0.0",
   "description": "FIAP TypeScript Project",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "install:backend": "cd tech_challenge1/backend && npm install",
     "build": "cd tech_challenge1/backend && npm run build",
-    "start": "cd tech_challenge1/backend && npm start",
+    "start": "node index.js",
     "test": "cd tech_challenge1/backend && npm test",
     "test:ci": "cd tech_challenge1/backend && npm run test:ci",
     "test:coverage": "cd tech_challenge1/backend && npm run test:coverage",
