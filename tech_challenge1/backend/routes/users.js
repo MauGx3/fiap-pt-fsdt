@@ -193,8 +193,15 @@ router.post('/', async (req, res) => {
       });
     }
 
+    // Validate email is a string to prevent NoSQL injection
+    if (typeof email !== "string") {
+      return res.status(400).json({
+        error: 'Invalid email format'
+      });
+    }
+
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: { $eq: email } });
     if (existingUser) {
       return res.status(400).json({
         error: 'User with this email already exists'
