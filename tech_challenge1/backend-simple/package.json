@@ -1,0 +1,35 @@
+{
+  "name": "simple-blog-api",
+  "version": "1.0.0",
+  "description": "A simplified blog API without authentication, focusing on posts and comments with UUID identification",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Tests not implemented in this simplified version\" && exit 1"
+  },
+  "keywords": [
+    "blog",
+    "api",
+    "nodejs",
+    "express",
+    "mongodb",
+    "uuid",
+    "simple",
+    "no-auth"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
