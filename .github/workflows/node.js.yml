@@ -3,6 +3,9 @@
 
 name: Node.js CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ "main" ]
@@ -11,8 +14,9 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     strategy:
       matrix:
