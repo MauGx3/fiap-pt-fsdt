@@ -23,7 +23,13 @@ A API está disponível também através do Render pela URL [https://fiap-pt-fsd
 ### Usuários
 
 - `POST /api/users/login` - Login de usuário
-- Outras rotas de gerenciamento de usuários (requerem autenticação)
+- `POST /api/users/logout` - Logout de usuário (requer autenticação)
+- `GET /api/users/me` - Obter perfil do usuário atual (requer autenticação)
+- `PUT /api/users/me` - Atualizar perfil do usuário atual (requer autenticação)
+- `PUT /api/users/me/password` - Alterar senha do usuário atual (requer autenticação)
+- `POST /api/users` - Criar novo usuário (público)
+- `GET /api/users` - Listar todos os usuários (público)
+- `GET /api/users/:uuid` - Buscar usuário por UUID (público)
 
 ### Utilitários
 
