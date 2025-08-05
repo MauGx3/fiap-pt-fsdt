@@ -2,11 +2,13 @@ import express, { json } from 'express';
 import postsRoutes from '../routes/posts.js';
 import usersRoutes from '../routes/users.js';
 import authRoutes from '../routes/auth.js';
+import { generalRateLimit } from '../middleware/rateLimit.js';
 
 export function createTestApp() {
   const app = express();
   
   // Middleware
+  app.use(generalRateLimit); // Apply rate limiting to all routes
   app.use(json({ limit: '10mb' }));
   
   // Routes

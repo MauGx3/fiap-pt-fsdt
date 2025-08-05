@@ -2,9 +2,10 @@ import { Router } from 'express';
 const router = Router();
 import User from '../models/User.js';
 import { generateToken, authenticateUser } from '../middleware/auth.js';
+import { authRateLimit, registrationRateLimit } from '../middleware/rateLimit.js';
 
 // Register new user
-router.post('/register', async (req, res) => {
+router.post('/register', registrationRateLimit, async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -63,7 +64,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login user
-router.post('/login', async (req, res) => {
+router.post('/login', authRateLimit, async (req, res) => {
   try {
     const { email, password } = req.body;
 

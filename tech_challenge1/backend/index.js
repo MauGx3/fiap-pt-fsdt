@@ -2,6 +2,9 @@
 import express, { json } from 'express';
 import { connect } from 'mongoose';
 
+// Middleware imports
+import { generalRateLimit } from './middleware/rateLimit.js';
+
 // Route imports
 import postsRoutes from './routes/posts.js';
 import usersRoutes from './routes/users.js';
@@ -12,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middleware
+app.use(generalRateLimit); // Apply rate limiting to all routes
 app.use(json({ limit: '10mb' })); // Add payload size limit
 
 // Routes
