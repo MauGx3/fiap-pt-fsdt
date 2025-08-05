@@ -194,7 +194,7 @@ router.post('/', async (req, res) => {
     }
 
     // Validate email is a string to prevent NoSQL injection
-    if (typeof email !== "string") {
+    if (typeof email !== 'string') {
       return res.status(400).json({
         error: 'Invalid email format'
       });
