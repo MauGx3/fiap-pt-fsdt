@@ -11,7 +11,7 @@
     "test:ci": "cd tech_challenge1/backend && npm run test:ci",
     "test:coverage": "cd tech_challenge1/backend && npm run test:coverage",
     "lint": "cd tech_challenge1/backend && npm run lint",
-    "prepare": "husky"
+    "prepare": "is-ci || husky"
   },
   "engines": {
     "node": ">=20.0.0",
@@ -31,6 +31,7 @@
   "license": "MIT",
   "devDependencies": {
     "husky": "^9.1.7",
+    "is-ci": "^3.0.1",
     "lint-staged": "^16.1.2"
   },
   "lint-staged": {
