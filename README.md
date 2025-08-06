@@ -2,7 +2,7 @@
 
 Uma API simples de blog construída com Express.js, MongoDB e autenticação JWT.
 
-A API está disponível também através do Render pela URL [https://fiap-pt-fsdt.onrender.com](https://fiap-pt-fsdt.onrender.com).
+A API está disponível também através do Render pela URL [https://fiap-pt-fsdt.onrender.com](https://fiap-pt-fsdt.onrender.com) (aguarde a reinicialização do container e atualize a página).
 
 ## Rotas Disponíveis
 
