@@ -108,7 +108,7 @@ router.get('/me', authenticateUser, async (req, res) => {
 router.put('/me', authenticateUser, async (req, res) => {
   try {
     const { name, email } = req.body;
-    
+
     // Create updateData object with only validated, whitelisted fields
     const updateData = {};
 
@@ -247,6 +247,11 @@ router.post('/', async (req, res) => {
         error: 'Invalid name format'
       });
     }
+    if (email && typeof email !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid email format'
+      });
+    }
     if (password && typeof password !== 'string') {
       return res.status(400).json({
         error: 'Invalid password format'
@@ -264,15 +269,8 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Validate email is a string to prevent NoSQL injection
-    if (typeof email !== 'string') {
-      return res.status(400).json({
-        error: 'Invalid email format'
-      });
-    }
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: { $eq: email } });
+    // Check if user already exists - use $eq to prevent NoSQL injection
+    const existingUser = await User.findOne({ email: { $eq: email.toLowerCase() } });
     if (existingUser) {
       return res.status(400).json({
         error: 'User with this email already exists'
@@ -281,7 +279,7 @@ router.post('/', async (req, res) => {
 
     const newUser = new User({
       name,
-      email,
+      email: email.toLowerCase(),
       password,
       role: role || 'author'
     });

@@ -11,6 +11,11 @@ export async function getAllPosts(req, res) {
 
 export async function getPostById(req, res) {
   try {
+    // Validate that id is a string to prevent NoSQL injection
+    if (typeof req.params.id !== 'string') {
+      return res.status(400).json({ error: 'Invalid ID format' });
+    }
+    
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
     res.json(post);
@@ -60,6 +65,11 @@ export async function updatePost(req, res) {
   try {
     const postId = req.params.id;
     const { title, content } = req.body;
+
+    // Validate that postId is a string to prevent NoSQL injection
+    if (typeof postId !== 'string') {
+      return res.status(400).json({ error: 'Invalid post ID format' });
+    }
 
     // Validate input types to prevent NoSQL injection
     if (title && typeof title !== 'string') {
@@ -114,6 +124,11 @@ export async function updatePost(req, res) {
 export async function deletePost(req, res) {
   try {
     const postId = req.params.id;
+
+    // Validate that postId is a string to prevent NoSQL injection
+    if (typeof postId !== 'string') {
+      return res.status(400).json({ error: 'Invalid post ID format' });
+    }
 
     // Find the post first to check ownership
     const existingPost = await Post.findById(postId);
