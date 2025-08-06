@@ -9,6 +9,28 @@ router.post('/register', registrationRateLimit, async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    // Validate input types to prevent NoSQL injection
+    if (name && typeof name !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid name format'
+      });
+    }
+    if (email && typeof email !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid email format'
+      });
+    }
+    if (password && typeof password !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid password format'
+      });
+    }
+    if (role && typeof role !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid role format'
+      });
+    }
+
     if (!name || !email || !password) {
       return res.status(400).json({
         error: 'Name, email, and password are required'
@@ -21,8 +43,8 @@ router.post('/register', registrationRateLimit, async (req, res) => {
       });
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    // Check if user already exists - use $eq to prevent NoSQL injection
+    const existingUser = await User.findOne({ email: { $eq: email.toLowerCase() } });
     if (existingUser) {
       return res.status(400).json({
         error: 'User with this email already exists'
@@ -68,14 +90,26 @@ router.post('/login', authRateLimit, async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validate input types to prevent NoSQL injection
+    if (email && typeof email !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid email format'
+      });
+    }
+    if (password && typeof password !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid password format'
+      });
+    }
+
     if (!email || !password) {
       return res.status(400).json({
         error: 'Email and password are required'
       });
     }
 
-    // Find user by email
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // Find user by email - use $eq to prevent NoSQL injection
+    const user = await User.findOne({ email: { $eq: email.toLowerCase() } });
     if (!user) {
       return res.status(401).json({
         error: 'Invalid email or password'

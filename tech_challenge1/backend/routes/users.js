@@ -147,7 +147,7 @@ router.put('/me', authenticateUser, async (req, res) => {
     }
 
     const updatedUser = await User.findOneAndUpdate(
-      { uuid: req.user.uuid },
+      { uuid: { $eq: req.user.uuid } },
       updateData,
       { new: true, runValidators: true }
     ).select('-password');
@@ -206,7 +206,7 @@ router.put('/me/password', authenticateUser, async (req, res) => {
     }
 
     // Find user with password field
-    const user = await User.findOne({ uuid: req.user.uuid });
+    const user = await User.findOne({ uuid: { $eq: req.user.uuid } });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

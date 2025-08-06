@@ -51,8 +51,8 @@ export async function authenticateUser(req, res, next) {
     // Verify token
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Find user by UUID from token
-    const user = await User.findOne({ uuid: decoded.uuid }).select('-password');
+    // Find user by UUID from token - use $eq for explicit security
+    const user = await User.findOne({ uuid: { $eq: decoded.uuid } }).select('-password');
 
     if (!user) {
       return res.status(401).json({
