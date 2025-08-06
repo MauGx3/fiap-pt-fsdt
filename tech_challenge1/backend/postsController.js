@@ -61,6 +61,18 @@ export async function updatePost(req, res) {
     const postId = req.params.id;
     const { title, content } = req.body;
 
+    // Validate input types to prevent NoSQL injection
+    if (title && typeof title !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid title format'
+      });
+    }
+    if (content && typeof content !== 'string') {
+      return res.status(400).json({
+        error: 'Invalid content format'
+      });
+    }
+
     // Find the post first to check ownership
     const existingPost = await Post.findById(postId);
     if (!existingPost) {
@@ -74,7 +86,7 @@ export async function updatePost(req, res) {
       });
     }
 
-    // Prepare update data
+    // Prepare update data with only validated, whitelisted fields
     const updateData = {};
     if (title) updateData.title = title;
     if (content) updateData.content = content;

@@ -108,6 +108,8 @@ router.get('/me', authenticateUser, async (req, res) => {
 router.put('/me', authenticateUser, async (req, res) => {
   try {
     const { name, email } = req.body;
+    
+    // Create updateData object with only validated, whitelisted fields
     const updateData = {};
 
     // Validate input types to prevent NoSQL injection
@@ -122,6 +124,7 @@ router.put('/me', authenticateUser, async (req, res) => {
       });
     }
 
+    // Only add validated fields to updateData - this prevents injection of MongoDB operators
     if (name) updateData.name = name;
     if (email) updateData.email = email.toLowerCase();
 
@@ -146,9 +149,10 @@ router.put('/me', authenticateUser, async (req, res) => {
       }
     }
 
+    // Use explicit $set operator to ensure safe update operation
     const updatedUser = await User.findOneAndUpdate(
       { uuid: { $eq: req.user.uuid } },
-      updateData,
+      { $set: updateData },
       { new: true, runValidators: true }
     ).select('-password');
 
