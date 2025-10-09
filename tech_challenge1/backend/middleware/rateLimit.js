@@ -1,7 +1,7 @@
 import rateLimit from 'express-rate-limit';
 
-// Skip rate limiting in test environment for most tests
-const isTestEnvironment = process.env.NODE_ENV === 'test';
+// Skip rate limiting in test environment or when running in containerized tests
+const isTestEnvironment = process.env.NODE_ENV === 'test' || process.env.MONGO_URI?.includes('mongo:');
 
 // General rate limiter for all routes
 export const generalRateLimit = rateLimit({

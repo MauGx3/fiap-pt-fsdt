@@ -1,7 +1,7 @@
-export default {
+module.exports = {
   // Test environment
   testEnvironment: 'node',
-  
+
   // Enable ES modules
   preset: null,
   transform: {},
@@ -40,7 +40,7 @@ export default {
   verbose: false,
 
   // Max workers for CI
-  maxWorkers: process.env.CI ? 2 : '50%',
+  maxWorkers: 1, // Run sequentially to avoid DB conflicts
 
   // Test timeout
   testTimeout: process.env.CI ? 30000 : 10000,

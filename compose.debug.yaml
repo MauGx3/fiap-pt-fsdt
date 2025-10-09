@@ -19,6 +19,8 @@ services:
     build:
       context: tech_challenge1/backend
       dockerfile: ./Dockerfile
+      args:
+        NODE_ENV: development
     image: fiap-pt-fsdt-backend:debug
     depends_on:
       mongo:
