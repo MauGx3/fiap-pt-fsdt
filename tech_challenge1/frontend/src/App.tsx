@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import { useTheme } from './theme/ThemeContext'
 import Header from './components/header/Header'
@@ -12,6 +12,11 @@ const Global = createGlobalStyle<{ theme: any }>`
 
 export default function App(): JSX.Element {
   const { theme, toggle } = useTheme()
+
+  useEffect(() => {
+    console.log('App mounted')
+  }, [])
+
   return (
     <>
       <Global theme={theme} />
