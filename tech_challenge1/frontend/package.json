@@ -8,15 +8,17 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "axios": "^1.12.2",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-hot-toast": "^2.6.0",
         "styled-components": "^5.3.11"
     },
     "devDependencies": {
-        "vite": "^7.1.9",
-        "typescript": "^5.4.2",
         "@types/react": "^18.2.21",
         "@types/react-dom": "^18.2.7",
-        "@types/styled-components": "^5.1.26"
+        "@types/styled-components": "^5.1.26",
+        "typescript": "^5.4.2",
+        "vite": "^7.1.9"
     }
 }

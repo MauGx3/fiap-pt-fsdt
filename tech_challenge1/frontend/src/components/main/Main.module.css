@@ -1,4 +1,41 @@
-.main{
-  flex:1;
-  padding:24px;
+.main {
+  flex: 1;
+  padding: 24px;
+}
+
+.post {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.post h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.post small {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.tags {
+  margin-top: 8px;
+}
+
+.tag {
+  display: inline-block;
+  background: #007bff;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  margin-right: 4px;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
 }
