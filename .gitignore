@@ -107,3 +107,6 @@ Thumbs.db
 # MongoDB Memory Server cache
 .mongodb-memory-server/
 node_modules
+
+*.instructions
+.github/instructions
