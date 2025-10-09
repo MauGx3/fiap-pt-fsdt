@@ -2,8 +2,7 @@ import React from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import { useTheme } from './theme/ThemeContext'
 
-// Global styles using styled-components
-const Global = createGlobalStyle`
+const Global = createGlobalStyle<{ theme: any }>`
   body { margin:0; font-family: system-ui, sans-serif; background: ${({ theme }) => theme.bg}; color: ${({ theme }) => theme.fg}; }
 `
 
@@ -14,8 +13,8 @@ const Card = styled.div`
   padding:24px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.08);
   background: ${({ theme }) => theme.card};
 `
-// Basic test component using Context Provider for dark theme
-export default function App() {
+
+export default function App(): JSX.Element {
     const { theme, toggle } = useTheme()
     return (
         <>
