@@ -11,8 +11,7 @@
     "test": "cd tech_challenge1/backend && npm test",
     "test:ci": "cd tech_challenge1/backend && npm run test:ci",
     "test:coverage": "cd tech_challenge1/backend && npm run test:coverage",
-    "lint": "cd tech_challenge1/backend && npm run lint",
-    "prepare": "is-ci || husky"
+    "lint": "cd tech_challenge1/backend && npm run lint && cd ../frontend && npm run lint"
   },
   "engines": {
     "node": ">=20.0.0",
@@ -25,15 +24,7 @@
   "author": "Mauricio Gioachini",
   "license": "MIT",
   "devDependencies": {
-    "husky": "^9.1.7",
-    "is-ci": "^3.0.1",
-    "lint-staged": "^16.1.2"
-  },
-  "lint-staged": {
-    "tech_challenge1/backend/**/*.js": [
-      "cd tech_challenge1/backend && npm run lint -- --fix",
-      "cd tech_challenge1/backend && npm test -- --passWithNoTests"
-    ]
+    "prettier": "^3.3.3"
   },
   "workspaces": [
     "tech_challenge1/backend"
