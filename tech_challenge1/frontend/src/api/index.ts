@@ -4,7 +4,7 @@ const rawBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/a
 const API_BASE_URL = rawBaseUrl.replace(/\/$/, '')
 
 // Create axios instance
-const api = axios.create({
+export const apiClient = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
@@ -12,7 +12,7 @@ const api = axios.create({
 })
 
 // Request interceptor to add auth token
-api.interceptors.request.use(
+apiClient.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token')
         if (token) {
@@ -24,7 +24,7 @@ api.interceptors.request.use(
 )
 
 // Response interceptor to handle token expiration
-api.interceptors.response.use(
+apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
@@ -38,7 +38,7 @@ api.interceptors.response.use(
 // Auth API
 export const authAPI = {
     register: async (data: { name: string; email: string; password: string; role?: string }) => {
-        const response = await api.post('/auth/register', data)
+        const response = await apiClient.post('/auth/register', data)
         if (response.data.token) {
             localStorage.setItem('token', response.data.token)
         }
@@ -46,7 +46,7 @@ export const authAPI = {
     },
 
     login: async (data: { email: string; password: string }) => {
-        const response = await api.post('/auth/login', data)
+        const response = await apiClient.post('/auth/login', data)
         if (response.data.token) {
             localStorage.setItem('token', response.data.token)
         }
@@ -54,18 +54,18 @@ export const authAPI = {
     },
 
     logout: async () => {
-        const response = await api.post('/auth/logout')
+        const response = await apiClient.post('/auth/logout')
         localStorage.removeItem('token')
         return response.data
     },
 
     verify: async () => {
-        const response = await api.get('/auth/verify')
+        const response = await apiClient.get('/auth/verify')
         return response.data
     },
 
     refresh: async () => {
-        const response = await api.post('/auth/refresh')
+        const response = await apiClient.post('/auth/refresh')
         if (response.data.token) {
             localStorage.setItem('token', response.data.token)
         }
@@ -76,32 +76,32 @@ export const authAPI = {
 // Posts API
 export const postsAPI = {
     getAll: async () => {
-        const response = await api.get('/posts')
+        const response = await apiClient.get('/posts')
         return response.data
     },
 
     getById: async (id: string) => {
-        const response = await api.get(`/posts/${id}`)
+        const response = await apiClient.get(`/posts/${id}`)
         return response.data
     },
 
     search: async (query: string) => {
-        const response = await api.get('/posts/search', { params: { q: query } })
+        const response = await apiClient.get('/posts/search', { params: { q: query } })
         return response.data
     },
 
     create: async (data: { title: string; content: string; tags?: string[] }) => {
-        const response = await api.post('/posts', data)
+        const response = await apiClient.post('/posts', data)
         return response.data
     },
 
     update: async (id: string, data: Partial<{ title: string; content: string; tags?: string[] }>) => {
-        const response = await api.put(`/posts/${id}`, data)
+        const response = await apiClient.put(`/posts/${id}`, data)
         return response.data
     },
 
     delete: async (id: string) => {
-        const response = await api.delete(`/posts/${id}`)
+        const response = await apiClient.delete(`/posts/${id}`)
         return response.data
     },
 }
@@ -109,32 +109,32 @@ export const postsAPI = {
 // Users API
 export const usersAPI = {
     getAll: async () => {
-        const response = await api.get('/users')
+        const response = await apiClient.get('/users')
         return response.data
     },
 
     getById: async (uuid: string) => {
-        const response = await api.get(`/users/${uuid}`)
+        const response = await apiClient.get(`/users/${uuid}`)
         return response.data
     },
 
     getMe: async () => {
-        const response = await api.get('/users/me')
+        const response = await apiClient.get('/users/me')
         return response.data
     },
 
     updateMe: async (data: Partial<{ name: string; email: string }>) => {
-        const response = await api.put('/users/me', data)
+        const response = await apiClient.put('/users/me', data)
         return response.data
     },
 
     changePassword: async (data: { currentPassword: string; newPassword: string }) => {
-        const response = await api.put('/users/me/password', data)
+        const response = await apiClient.put('/users/me/password', data)
         return response.data
     },
 
     create: async (data: { name: string; email: string; password: string; role?: string }) => {
-        const response = await api.post('/users', data)
+        const response = await apiClient.post('/users', data)
         return response.data
     },
 }

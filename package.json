@@ -37,5 +37,8 @@
   },
   "workspaces": [
     "tech_challenge1/backend"
-  ]
+  ],
+  "dependencies": {
+    "vite": "^7.1.9"
+  }
 }
