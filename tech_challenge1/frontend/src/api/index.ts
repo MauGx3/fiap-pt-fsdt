@@ -86,7 +86,7 @@ export const postsAPI = {
     },
 
     search: async (query: string) => {
-        const response = await apiClient.get('/posts/search', { params: { q: query } })
+        const response = await apiClient.get('/posts/search', { params: { query } })
         return response.data
     },
 
