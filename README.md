@@ -88,30 +88,30 @@ npm test
 ## Executando a stack completa com Docker Compose
 
 1. Duplique o arquivo `.env.example` para `.env` na raiz do projeto e ajuste os valores:
-  - `JWT_SECRET`: defina uma chave forte (obrigatório).
-  - `BACKEND_PORT` e `FRONTEND_PORT`: altere apenas se quiser expor em portas diferentes.
+  - `JWT_SECRET`: defina uma chave secreta (obrigatório).
+  - `BACKEND_PORT` e `FRONTEND_PORT`: altere apenas se quiser utilizar portas diferentes de `8080` e `3000`.
 
-2. Faça o build das imagens e suba os serviços:
+2. Faça o build das imagens e inicie os serviços:
   ```bash
   docker compose up --build
   ```
 
-  Para o ambiente de depuração (backend com inspector Node.js em `9229`), utilize:
+  Para o ambiente de debug (backend com debugger Node.js em `9229`), utilize:
   ```bash
   docker compose -f compose.debug.yaml up --build
   ```
 
 3. Acesse os serviços:
-  - Frontend: http://localhost:8080 (ou porta configurada em `FRONTEND_PORT`)
-  - API: http://localhost:3000/api (ou porta configurada em `BACKEND_PORT`)
+  - Frontend: http://localhost:8080 (ou `FRONTEND_PORT`)
+  - API: http://localhost:3000/api (ou `BACKEND_PORT`)
   - MongoDB: acessível internamente em `mongodb://mongo:27017/fiap-blog`
 
-Os contêineres possuem health checks configurados; o frontend somente inicia após o backend e o backend depende de um MongoDB saudável.
+Os containers possuem health checks configurados: o frontend somente inicia após o backend e o backend depende de um MongoDB saudável.
 
 ## Variáveis de Ambiente
 
-- `MONGO_URI`: URI de conexão com MongoDB (já configurada na orquestração Docker).
-- `JWT_SECRET`: Chave secreta para JWT (obrigatório).
-- `PORT`: Porta da aplicação (padrão: 3000).
+- `MONGO_URI`: URI de conexão com MongoDB (já configurada no docker-compose).
+- `JWT_SECRET`: Chave secreta para JWT (obrigatório, string de teste usada para estudos).
+- `PORT`: Porta do backend (padrão: 3000).
 - `NODE_ENV`: Ambiente de execução.
 - `JWT_EXPIRES_IN`: Tempo de expiração do token JWT (padrão `7d`).
