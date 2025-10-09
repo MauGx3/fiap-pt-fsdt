@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styles from './Main.module.css'
 
-export default function Main(){
+export default function Main() {
   const [count, setCount] = useState(0)
 
   return (
