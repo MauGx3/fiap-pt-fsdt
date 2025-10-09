@@ -97,6 +97,39 @@ describe('Application Health and Routes', () => {
     });
   });
 
+  describe('CORS', () => {
+    test('should allow requests from allowed origins', async () => {
+      const response = await request(app)
+        .get('/health')
+        .set('Origin', 'http://localhost:8080')
+        .expect(200);
+
+      expect(response.headers['access-control-allow-origin']).toBe('*');
+      expect(response.headers['access-control-allow-credentials']).toBe('true');
+    });
+
+    test('should handle OPTIONS preflight requests', async () => {
+      const response = await request(app)
+        .options('/api/posts')
+        .set('Origin', 'http://localhost:8080')
+        .expect(200);
+
+      expect(response.headers['access-control-allow-methods']).toContain('GET');
+      expect(response.headers['access-control-allow-methods']).toContain('POST');
+      expect(response.headers['access-control-allow-headers']).toContain('Content-Type');
+      expect(response.headers['access-control-allow-headers']).toContain('Authorization');
+    });
+
+    test('should include CORS headers in all responses', async () => {
+      const response = await request(app)
+        .get('/api/posts')
+        .expect(200);
+
+      expect(response.headers['access-control-allow-methods']).toBeDefined();
+      expect(response.headers['access-control-allow-headers']).toBeDefined();
+    });
+  });
+
   describe('Error Handling', () => {
     test('should handle malformed JSON', async () => {
       const response = await request(app)
