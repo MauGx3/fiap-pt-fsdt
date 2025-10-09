@@ -4,9 +4,6 @@
 # Build stage - Contains all build dependencies and source code
 FROM node:18-alpine AS build
 
-# Install dependencies needed for native packages (if any)
-RUN apk add --no-cache python3 make g++
-
 # Set working directory
 WORKDIR /app
 
