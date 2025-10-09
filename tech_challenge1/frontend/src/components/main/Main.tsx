@@ -1,110 +1,124 @@
-import React, { useState, useEffect } from 'react'
-import styles from './Main.module.css'
-import { postsAPI } from '../../api'
-import LoadingSpinner from '../LoadingSpinner'
-import ErrorPage from '../ErrorPage'
-import toast, { Toaster } from 'react-hot-toast'
+import React, { useState, useEffect } from "react";
+import styles from "./Main.module.css";
+import { postsAPI } from "../../api";
+import LoadingSpinner from "../LoadingSpinner";
+import ErrorPage from "../ErrorPage";
+import toast, { Toaster } from "react-hot-toast";
 
 interface Post {
-  _id: string
-  title: string
-  content: string
-  author: string
-  tags?: string[]
-  createdAt: string
+  _id: string;
+  title: string;
+  content: string;
+  author: string;
+  tags?: string[];
+  createdAt: string;
 }
 
 export default function Main() {
-  const [posts, setPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [count, setCount] = useState(0)
-  const [showCreateForm, setShowCreateForm] = useState(false)
-  const [newPost, setNewPost] = useState({ title: '', content: '', tags: '' })
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [count, setCount] = useState(0);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newPost, setNewPost] = useState({ title: "", content: "", tags: "" });
 
   const handleCreatePost = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!newPost.title.trim() || !newPost.content.trim()) {
-      toast.error('Title and content are required')
-      return
+      toast.error("Title and content are required");
+      return;
     }
 
     try {
-      const tags = newPost.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag)
+      const tags = newPost.tags
+        .split(",")
+        .map((tag: string) => tag.trim())
+        .filter((tag: string) => tag);
       const createdPost = await postsAPI.create({
         title: newPost.title,
         content: newPost.content,
-        tags: tags.length > 0 ? tags : undefined
-      })
+        tags: tags.length > 0 ? tags : undefined,
+      });
 
-      setPosts(prev => [createdPost, ...prev])
-      setNewPost({ title: '', content: '', tags: '' })
-      setShowCreateForm(false)
-      toast.success('Post created successfully!')
+      setPosts((prev) => [createdPost, ...prev]);
+      setNewPost({ title: "", content: "", tags: "" });
+      setShowCreateForm(false);
+      toast.success("Post created successfully!");
     } catch (err: any) {
-      console.error('Error creating post:', err)
-      if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+      console.error("Error creating post:", err);
+      if (
+        err.code === "ECONNREFUSED" ||
+        err.message?.includes("Network Error")
+      ) {
         // Mock post creation for demo
         const mockPost: Post = {
           _id: Date.now().toString(),
           title: newPost.title,
           content: newPost.content,
-          author: 'Demo User',
-          tags: newPost.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag),
-          createdAt: new Date().toISOString()
-        }
-        setPosts(prev => [mockPost, ...prev])
-        setNewPost({ title: '', content: '', tags: '' })
-        setShowCreateForm(false)
-        toast.success('Post created (demo mode)!')
+          author: "Demo User",
+          tags: newPost.tags
+            .split(",")
+            .map((tag: string) => tag.trim())
+            .filter((tag: string) => tag),
+          createdAt: new Date().toISOString(),
+        };
+        setPosts((prev) => [mockPost, ...prev]);
+        setNewPost({ title: "", content: "", tags: "" });
+        setShowCreateForm(false);
+        toast.success("Post created (demo mode)!");
       } else {
-        toast.error('Failed to create post')
+        toast.error("Failed to create post");
       }
     }
-  }
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const data = await postsAPI.getAll()
-        setPosts(data)
-        toast.success('Posts loaded successfully!')
+        const data = await postsAPI.getAll();
+        setPosts(data);
+        toast.success("Posts loaded successfully!");
       } catch (err: any) {
-        console.error('Error fetching posts:', err)
+        console.error("Error fetching posts:", err);
 
         // Fallback to mock data if backend is not available
-        if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
-          console.log('Backend not available, using mock data')
+        if (
+          err.code === "ECONNREFUSED" ||
+          err.message?.includes("Network Error")
+        ) {
+          console.log("Backend not available, using mock data");
           setPosts([
             {
-              _id: '1',
-              title: 'Welcome to FIAP Blog',
-              content: 'This is a sample post to demonstrate the blog functionality. The backend API is not currently running, but you can see how the UI works with mock data.',
-              author: 'System',
-              tags: ['welcome', 'demo'],
-              createdAt: new Date().toISOString()
+              _id: "1",
+              title: "Welcome to FIAP Blog",
+              content:
+                "This is a sample post to demonstrate the blog functionality. The backend API is not currently running, but you can see how the UI works with mock data.",
+              author: "System",
+              tags: ["welcome", "demo"],
+              createdAt: new Date().toISOString(),
             },
             {
-              _id: '2',
-              title: 'Getting Started with React and TypeScript',
-              content: 'React with TypeScript provides excellent developer experience with type safety and modern JavaScript features.',
-              author: 'Developer',
-              tags: ['react', 'typescript', 'frontend'],
-              createdAt: new Date(Date.now() - 86400000).toISOString()
-            }
-          ])
-          toast('Using demo data - backend not available', { icon: 'ℹ️' })
+              _id: "2",
+              title: "Getting Started with React and TypeScript",
+              content:
+                "React with TypeScript provides excellent developer experience with type safety and modern JavaScript features.",
+              author: "Developer",
+              tags: ["react", "typescript", "frontend"],
+              createdAt: new Date(Date.now() - 86400000).toISOString(),
+            },
+          ]);
+          toast("Using demo data - backend not available", { icon: "ℹ️" });
         } else {
-          setError('Failed to load posts')
-          toast.error('Failed to load posts. Please try again.')
+          setError("Failed to load posts");
+          toast.error("Failed to load posts. Please try again.");
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchPosts()
-  }, [])
+    fetchPosts();
+  }, []);
 
   return (
     <main className={styles.main}>
@@ -115,7 +129,7 @@ export default function Main() {
           onClick={() => setShowCreateForm(!showCreateForm)}
           className={styles.createButton}
         >
-          {showCreateForm ? 'Cancel' : 'Create Post'}
+          {showCreateForm ? "Cancel" : "Create Post"}
         </button>
       </div>
 
@@ -126,7 +140,9 @@ export default function Main() {
               type="text"
               placeholder="Post title"
               value={newPost.title}
-              onChange={(e) => setNewPost(prev => ({ ...prev, title: e.target.value }))}
+              onChange={(e) =>
+                setNewPost((prev) => ({ ...prev, title: e.target.value }))
+              }
               required
             />
           </div>
@@ -134,7 +150,9 @@ export default function Main() {
             <textarea
               placeholder="Post content"
               value={newPost.content}
-              onChange={(e) => setNewPost(prev => ({ ...prev, content: e.target.value }))}
+              onChange={(e) =>
+                setNewPost((prev) => ({ ...prev, content: e.target.value }))
+              }
               rows={4}
               required
             />
@@ -144,7 +162,9 @@ export default function Main() {
               type="text"
               placeholder="Tags (comma separated)"
               value={newPost.tags}
-              onChange={(e) => setNewPost(prev => ({ ...prev, tags: e.target.value }))}
+              onChange={(e) =>
+                setNewPost((prev) => ({ ...prev, tags: e.target.value }))
+              }
             />
           </div>
           <button type="submit">Create Post</button>
@@ -152,7 +172,9 @@ export default function Main() {
       )}
 
       {loading && <LoadingSpinner />}
-      {error && <ErrorPage message={error} onRetry={() => window.location.reload()} />}
+      {error && (
+        <ErrorPage message={error} onRetry={() => window.location.reload()} />
+      )}
       {!loading && !error && (
         <div>
           {posts.length === 0 ? (
@@ -162,11 +184,16 @@ export default function Main() {
               <div key={post._id} className={styles.post}>
                 <h3>{post.title}</h3>
                 <p>{post.content}</p>
-                <small>By {post.author} on {new Date(post.createdAt).toLocaleDateString()}</small>
+                <small>
+                  By {post.author} on{" "}
+                  {new Date(post.createdAt).toLocaleDateString()}
+                </small>
                 {post.tags && post.tags.length > 0 && (
                   <div className={styles.tags}>
                     {post.tags.map((tag, index) => (
-                      <span key={index} className={styles.tag}>{tag}</span>
+                      <span key={index} className={styles.tag}>
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 )}
@@ -179,5 +206,5 @@ export default function Main() {
       <p>Count: {count}</p>
       <button onClick={() => setCount(count + 1)}>Increment</button>
     </main>
-  )
+  );
 }

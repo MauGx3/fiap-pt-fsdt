@@ -88,23 +88,27 @@ npm test
 ## Executando a stack completa com Docker Compose
 
 1. Duplique o arquivo `.env.example` para `.env` na raiz do projeto e ajuste os valores:
-  - `JWT_SECRET`: defina uma chave forte (obrigatório).
-  - `BACKEND_PORT` e `FRONTEND_PORT`: altere apenas se quiser expor em portas diferentes.
+
+- `JWT_SECRET`: defina uma chave forte (obrigatório).
+- `BACKEND_PORT` e `FRONTEND_PORT`: altere apenas se quiser expor em portas diferentes.
 
 2. Faça o build das imagens e suba os serviços:
-  ```bash
-  docker compose up --build
-  ```
 
-  Para o ambiente de depuração (backend com inspector Node.js em `9229`), utilize:
-  ```bash
-  docker compose -f compose.debug.yaml up --build
-  ```
+```bash
+docker compose up --build
+```
+
+Para o ambiente de depuração (backend com inspector Node.js em `9229`), utilize:
+
+```bash
+docker compose -f compose.debug.yaml up --build
+```
 
 3. Acesse os serviços:
-  - Frontend: http://localhost:8080 (ou porta configurada em `FRONTEND_PORT`)
-  - API: http://localhost:3000/api (ou porta configurada em `BACKEND_PORT`)
-  - MongoDB: acessível internamente em `mongodb://mongo:27017/fiap-blog`
+
+- Frontend: http://localhost:8080 (ou porta configurada em `FRONTEND_PORT`)
+- API: http://localhost:3000/api (ou porta configurada em `BACKEND_PORT`)
+- MongoDB: acessível internamente em `mongodb://mongo:27017/fiap-blog`
 
 Os contêineres possuem health checks configurados; o frontend somente inicia após o backend e o backend depende de um MongoDB saudável.
 

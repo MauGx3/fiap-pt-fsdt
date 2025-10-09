@@ -36,7 +36,7 @@ As the application grows with dashboards, settings, or admin views, expand the s
 
 ### 1. Page-Level Scenarios
 
-- Build *happy path* integration tests for each new route using `<App />` or dedicated layout components to verify routing, guards, and 404 fallbacks.
+- Build _happy path_ integration tests for each new route using `<App />` or dedicated layout components to verify routing, guards, and 404 fallbacks.
 - When a page orchestrates multiple API modules, write contract tests that mock Axios responses once and assert all widgets update together.
 - Capture regression scenarios (loading spinners, permission errors, empty states) so UI contracts stay stable even when the backend evolves.
 

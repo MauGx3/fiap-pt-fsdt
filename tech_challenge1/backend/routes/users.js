@@ -1,35 +1,35 @@
-import { Router } from 'express';
+import { Router } from "express";
 const router = Router();
-import User from '../models/User.js';
-import { generateToken, authenticateUser } from '../middleware/auth.js';
+import User from "../models/User.js";
+import { generateToken, authenticateUser } from "../middleware/auth.js";
 
 // User login/authentication
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Validate input types to prevent NoSQL injection
-    if (email && typeof email !== 'string') {
+    if (email && typeof email !== "string") {
       return res.status(400).json({
-        error: 'Invalid email format'
+        error: "Invalid email format",
       });
     }
-    if (password && typeof password !== 'string') {
+    if (password && typeof password !== "string") {
       return res.status(400).json({
-        error: 'Invalid password format'
+        error: "Invalid password format",
       });
     }
 
     if (!email || !password) {
       return res.status(400).json({
-        error: 'Email and password are required'
+        error: "Email and password are required",
       });
     }
 
     // Validate email is a string to prevent NoSQL injection
-    if (typeof email !== 'string') {
+    if (typeof email !== "string") {
       return res.status(400).json({
-        error: 'Invalid email format'
+        error: "Invalid email format",
       });
     }
 
@@ -37,7 +37,7 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email: { $eq: email.toLowerCase() } });
     if (!user) {
       return res.status(401).json({
-        error: 'Invalid email or password'
+        error: "Invalid email or password",
       });
     }
 
@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       return res.status(401).json({
-        error: 'Invalid email or password'
+        error: "Invalid email or password",
       });
     }
 
@@ -54,40 +54,42 @@ router.post('/login', async (req, res) => {
 
     // Return user data and token
     res.json({
-      message: 'Login successful',
+      message: "Login successful",
       token,
       user: {
         uuid: user.uuid,
         name: user.name,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // User logout (since JWT is stateless, this is mainly for client-side token removal)
-router.post('/logout', authenticateUser, async (req, res) => {
+router.post("/logout", authenticateUser, async (req, res) => {
   try {
     // In a stateless JWT system, logout is handled client-side by removing the token
     // Here we can log the logout action and provide confirmation
-    console.log(`User ${req.user.email} logged out at ${new Date().toISOString()}`);
+    console.log(
+      `User ${req.user.email} logged out at ${new Date().toISOString()}`,
+    );
 
     res.json({
-      message: 'Logout successful',
-      instruction: 'Please remove the token from your client storage'
+      message: "Logout successful",
+      instruction: "Please remove the token from your client storage",
     });
   } catch (err) {
-    console.error('Logout error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Logout error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // Get current user profile (requires authentication)
-router.get('/me', authenticateUser, async (req, res) => {
+router.get("/me", authenticateUser, async (req, res) => {
   try {
     // User info is already attached to req.user by the authenticateUser middleware
     res.json({
@@ -95,17 +97,17 @@ router.get('/me', authenticateUser, async (req, res) => {
         uuid: req.user.uuid,
         name: req.user.name,
         email: req.user.email,
-        role: req.user.role
-      }
+        role: req.user.role,
+      },
     });
   } catch (err) {
-    console.error('Get profile error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Get profile error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // Update current user profile (requires authentication)
-router.put('/me', authenticateUser, async (req, res) => {
+router.put("/me", authenticateUser, async (req, res) => {
   try {
     const { name, email } = req.body;
 
@@ -113,14 +115,14 @@ router.put('/me', authenticateUser, async (req, res) => {
     const updateData = {};
 
     // Validate input types to prevent NoSQL injection
-    if (name && typeof name !== 'string') {
+    if (name && typeof name !== "string") {
       return res.status(400).json({
-        error: 'Invalid name format'
+        error: "Invalid name format",
       });
     }
-    if (email && typeof email !== 'string') {
+    if (email && typeof email !== "string") {
       return res.status(400).json({
-        error: 'Invalid email format'
+        error: "Invalid email format",
       });
     }
 
@@ -131,20 +133,20 @@ router.put('/me', authenticateUser, async (req, res) => {
     // Check if email is already taken by another user
     if (email) {
       // Validate email is a string to prevent NoSQL injection
-      if (typeof email !== 'string') {
+      if (typeof email !== "string") {
         return res.status(400).json({
-          error: 'Invalid email format'
+          error: "Invalid email format",
         });
       }
 
       const existingUser = await User.findOne({
         email: { $eq: email.toLowerCase() },
-        uuid: { $ne: req.user.uuid } // Exclude current user
+        uuid: { $ne: req.user.uuid }, // Exclude current user
       });
 
       if (existingUser) {
         return res.status(400).json({
-          error: 'Email is already taken by another user'
+          error: "Email is already taken by another user",
         });
       }
     }
@@ -153,73 +155,73 @@ router.put('/me', authenticateUser, async (req, res) => {
     const updatedUser = await User.findOneAndUpdate(
       { uuid: { $eq: req.user.uuid } },
       { $set: updateData },
-      { new: true, runValidators: true }
-    ).select('-password');
+      { new: true, runValidators: true },
+    ).select("-password");
 
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.json({
-      message: 'Profile updated successfully',
+      message: "Profile updated successfully",
       user: {
         uuid: updatedUser.uuid,
         name: updatedUser.name,
         email: updatedUser.email,
-        role: updatedUser.role
-      }
+        role: updatedUser.role,
+      },
     });
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err.name === "ValidationError") {
       return res.status(400).json({
-        error: 'Validation failed: ' + err.message
+        error: "Validation failed: " + err.message,
       });
     }
-    console.error('Update profile error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Update profile error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // Change password (requires authentication)
-router.put('/me/password', authenticateUser, async (req, res) => {
+router.put("/me/password", authenticateUser, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
     // Validate input types to prevent NoSQL injection
-    if (currentPassword && typeof currentPassword !== 'string') {
+    if (currentPassword && typeof currentPassword !== "string") {
       return res.status(400).json({
-        error: 'Invalid current password format'
+        error: "Invalid current password format",
       });
     }
-    if (newPassword && typeof newPassword !== 'string') {
+    if (newPassword && typeof newPassword !== "string") {
       return res.status(400).json({
-        error: 'Invalid new password format'
+        error: "Invalid new password format",
       });
     }
 
     if (!currentPassword || !newPassword) {
       return res.status(400).json({
-        error: 'Current password and new password are required'
+        error: "Current password and new password are required",
       });
     }
 
     if (newPassword.length < 6) {
       return res.status(400).json({
-        error: 'New password must be at least 6 characters long'
+        error: "New password must be at least 6 characters long",
       });
     }
 
     // Find user with password field
     const user = await User.findOne({ uuid: { $eq: req.user.uuid } });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Verify current password
     const isCurrentPasswordValid = await user.comparePassword(currentPassword);
     if (!isCurrentPasswordValid) {
       return res.status(400).json({
-        error: 'Current password is incorrect'
+        error: "Current password is incorrect",
       });
     }
 
@@ -228,52 +230,54 @@ router.put('/me/password', authenticateUser, async (req, res) => {
     await user.save();
 
     res.json({
-      message: 'Password updated successfully'
+      message: "Password updated successfully",
     });
   } catch (err) {
-    console.error('Change password error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Change password error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // Create a new user
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
     // Validate input types to prevent NoSQL injection
-    if (name && typeof name !== 'string') {
+    if (name && typeof name !== "string") {
       return res.status(400).json({
-        error: 'Invalid name format'
+        error: "Invalid name format",
       });
     }
-    if (email && typeof email !== 'string') {
+    if (email && typeof email !== "string") {
       return res.status(400).json({
-        error: 'Invalid email format'
+        error: "Invalid email format",
       });
     }
-    if (password && typeof password !== 'string') {
+    if (password && typeof password !== "string") {
       return res.status(400).json({
-        error: 'Invalid password format'
+        error: "Invalid password format",
       });
     }
-    if (role && typeof role !== 'string') {
+    if (role && typeof role !== "string") {
       return res.status(400).json({
-        error: 'Invalid role format'
+        error: "Invalid role format",
       });
     }
 
     if (!name || !email || !password) {
       return res.status(400).json({
-        error: 'Name, email, and password are required'
+        error: "Name, email, and password are required",
       });
     }
 
     // Check if user already exists - use $eq to prevent NoSQL injection
-    const existingUser = await User.findOne({ email: { $eq: email.toLowerCase() } });
+    const existingUser = await User.findOne({
+      email: { $eq: email.toLowerCase() },
+    });
     if (existingUser) {
       return res.status(400).json({
-        error: 'User with this email already exists'
+        error: "User with this email already exists",
       });
     }
 
@@ -281,7 +285,7 @@ router.post('/', async (req, res) => {
       name,
       email: email.toLowerCase(),
       password,
-      role: role || 'author'
+      role: role || "author",
     });
 
     await newUser.save();
@@ -292,45 +296,48 @@ router.post('/', async (req, res) => {
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
-      createdAt: newUser.createdAt
+      createdAt: newUser.createdAt,
     };
 
     res.status(201).json(userResponse);
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err.name === "ValidationError") {
       return res.status(400).json({
-        error: 'Validation failed: ' + err.message
+        error: "Validation failed: " + err.message,
       });
     }
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // Get all users
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const users = await User.find({}, '-password');
+    const users = await User.find({}, "-password");
     res.json(users);
   } catch {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // Get user by UUID
-router.get('/:uuid', async (req, res) => {
+router.get("/:uuid", async (req, res) => {
   try {
     // Validate UUID is a string to prevent NoSQL injection
-    if (typeof req.params.uuid !== 'string') {
-      return res.status(400).json({ error: 'Invalid UUID format' });
+    if (typeof req.params.uuid !== "string") {
+      return res.status(400).json({ error: "Invalid UUID format" });
     }
 
-    const user = await User.findOne({ uuid: { $eq: req.params.uuid } }, '-password');
+    const user = await User.findOne(
+      { uuid: { $eq: req.params.uuid } },
+      "-password",
+    );
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     res.json(user);
   } catch {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

@@ -21,7 +21,7 @@ repos:
       - id: eslint-backend
         name: eslint backend
         entry: bash
-        args: [-c, 'cd tech_challenge1/backend && npm run lint -- --fix']
+        args: [-c, "cd tech_challenge1/backend && npm run lint -- --fix"]
         language: system
         files: tech_challenge1/backend/.*\.(js)$
         pass_filenames: false
@@ -29,7 +29,7 @@ repos:
       - id: eslint-frontend
         name: eslint frontend
         entry: bash
-        args: [-c, 'cd tech_challenge1/frontend && npm run lint -- --fix']
+        args: [-c, "cd tech_challenge1/frontend && npm run lint -- --fix"]
         language: system
         files: tech_challenge1/frontend/.*\.(ts|tsx)$
         pass_filenames: false
@@ -40,8 +40,8 @@ ci:
 
     for more information, see https://pre-commit.ci
   autofix_prs: true
-  autoupdate_branch: ''
-  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_branch: ""
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
   autoupdate_schedule: weekly
   skip: []
   submodules: false

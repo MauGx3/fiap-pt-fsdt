@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 // Validate JWT_SECRET exists
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-  console.error('❌ JWT_SECRET environment variable not set.');
+  console.error("❌ JWT_SECRET environment variable not set.");
   process.exit(1);
 }
 
@@ -18,14 +18,14 @@ export function generateToken(user) {
       uuid: user.uuid,
       email: user.email,
       role: user.role,
-      iat: currentTime  // Explicitly set issued at time
+      iat: currentTime, // Explicitly set issued at time
     },
     JWT_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-      issuer: 'blog-api',
-      subject: user.uuid
-    }
+      expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+      issuer: "blog-api",
+      subject: user.uuid,
+    },
   );
 }
 
@@ -33,18 +33,18 @@ export function generateToken(user) {
 export async function authenticateUser(req, res, next) {
   try {
     // Extract token from Authorization header
-    const authHeader = req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const authHeader = req.header("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
-        error: 'Access denied. No valid authorization header provided.'
+        error: "Access denied. No valid authorization header provided.",
       });
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    const token = authHeader.replace("Bearer ", "");
 
     if (!token) {
       return res.status(401).json({
-        error: 'Access denied. No token provided.'
+        error: "Access denied. No token provided.",
       });
     }
 
@@ -52,11 +52,13 @@ export async function authenticateUser(req, res, next) {
     const decoded = jwt.verify(token, JWT_SECRET);
 
     // Find user by UUID from token - use $eq for explicit security
-    const user = await User.findOne({ uuid: { $eq: decoded.uuid } }).select('-password');
+    const user = await User.findOne({ uuid: { $eq: decoded.uuid } }).select(
+      "-password",
+    );
 
     if (!user) {
       return res.status(401).json({
-        error: 'Invalid token - user not found.'
+        error: "Invalid token - user not found.",
       });
     }
 
@@ -65,25 +67,25 @@ export async function authenticateUser(req, res, next) {
       uuid: user.uuid,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
     };
 
     next();
   } catch (err) {
-    console.error('Authentication error:', err.message);
+    console.error("Authentication error:", err.message);
 
     // Handle specific JWT errors
-    if (err.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Token has expired.' });
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token has expired." });
     }
-    if (err.name === 'JsonWebTokenError') {
-      return res.status(401).json({ error: 'Invalid token format.' });
+    if (err.name === "JsonWebTokenError") {
+      return res.status(401).json({ error: "Invalid token format." });
     }
-    if (err.name === 'NotBeforeError') {
-      return res.status(401).json({ error: 'Token not active yet.' });
+    if (err.name === "NotBeforeError") {
+      return res.status(401).json({ error: "Token not active yet." });
     }
 
-    res.status(401).json({ error: 'Authentication failed.' });
+    res.status(401).json({ error: "Authentication failed." });
   }
 }
 
@@ -91,12 +93,12 @@ export async function authenticateUser(req, res, next) {
 export function requireRole(...roles) {
   return (req, res, next) => {
     if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required.' });
+      return res.status(401).json({ error: "Authentication required." });
     }
 
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
-        error: `Access denied. Required role: ${roles.join(' or ')}`
+        error: `Access denied. Required role: ${roles.join(" or ")}`,
       });
     }
 
