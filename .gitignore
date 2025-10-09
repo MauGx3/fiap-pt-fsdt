@@ -110,3 +110,8 @@ node_modules
 
 *.instructions
 .github/instructions
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
