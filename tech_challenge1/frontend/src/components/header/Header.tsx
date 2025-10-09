@@ -2,16 +2,13 @@ import React, { useState } from 'react'
 import styles from './Header.module.css'
 import { authAPI, isAuthenticated } from '../../api'
 import toast from 'react-hot-toast'
+import { NavLink, useNavigate } from 'react-router-dom'
 
-interface HeaderProps {
-  currentView: 'home' | 'profile'
-  onViewChange: (view: 'home' | 'profile') => void
-}
-
-export default function Header({ currentView, onViewChange }: HeaderProps) {
+export default function Header() {
   const [showAuth, setShowAuth] = useState(false)
   const [isLogin, setIsLogin] = useState(true)
   const [authData, setAuthData] = useState({ name: '', email: '', password: '' })
+  const navigate = useNavigate()
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,9 +24,10 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
         })
         toast.success('Registered successfully!')
       }
+
       setShowAuth(false)
       setAuthData({ name: '', email: '', password: '' })
-      window.location.reload() // Refresh to update auth state
+      navigate(0)
     } catch (err: any) {
       console.error('Auth error:', err)
       if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
@@ -46,12 +44,14 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
     try {
       await authAPI.logout()
       toast.success('Logged out successfully!')
-      window.location.reload()
+      navigate('/')
+      navigate(0)
     } catch (err: any) {
       console.error('Logout error:', err)
       // Fallback for demo
       toast.success('Logged out (demo mode)!')
-      window.location.reload()
+      navigate('/')
+      navigate(0)
     }
   }
 
@@ -59,18 +59,19 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
     <header className={styles.header}>
       <h1>FIAP Frontend</h1>
       <nav className={styles.nav}>
-        <button
-          className={currentView === 'home' ? styles.active : ''}
-          onClick={() => onViewChange('home')}
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) => (isActive ? styles.active : '')}
         >
           Home
-        </button>
-        <button
-          className={currentView === 'profile' ? styles.active : ''}
-          onClick={() => onViewChange('profile')}
+        </NavLink>
+        <NavLink
+          to="/profile"
+          className={({ isActive }) => (isActive ? styles.active : '')}
         >
           Profile
-        </button>
+        </NavLink>
         {isAuthenticated() ? (
           <button onClick={handleLogout}>Logout</button>
         ) : (

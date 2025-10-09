@@ -19,7 +19,8 @@
   gap: 12px;
 }
 
-.nav button {
+.nav button,
+.nav a {
   background: transparent;
   border: 1px solid #ffffff;
   color: #ffffff;
@@ -27,13 +28,19 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.nav button:hover {
+.nav button:hover,
+.nav a:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.nav button.active {
+.nav button.active,
+.nav a.active {
   background: #ffffff;
   color: #1f2937;
 }
