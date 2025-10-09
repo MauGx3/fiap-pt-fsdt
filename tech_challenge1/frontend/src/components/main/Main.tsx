@@ -15,12 +15,14 @@ interface Post {
 }
 
 export default function Main() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [count, setCount] = useState(0);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newPost, setNewPost] = useState({ title: "", content: "", tags: "" });
+  const [posts, setPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [count, setCount] = useState(0)
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [newPost, setNewPost] = useState({ title: '', content: '', tags: '' })
+  const [editingPostId, setEditingPostId] = useState<string | null>(null)
+  const [editPost, setEditPost] = useState({ title: '', content: '', tags: '' })
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +73,58 @@ export default function Main() {
       }
     }
   };
+
+  const handleEditPost = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editPost.title.trim() || !editPost.content.trim()) {
+      toast.error('Title and content are required')
+      return
+    }
+
+    try {
+      const tags = editPost.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag)
+      const updatedPost = await postsAPI.update(editingPostId!, {
+        title: editPost.title,
+        content: editPost.content,
+        tags: tags.length > 0 ? tags : undefined
+      })
+
+      setPosts(prev => prev.map(p => p._id === editingPostId ? { ...p, ...updatedPost } : p))
+      setEditingPostId(null)
+      setEditPost({ title: '', content: '', tags: '' })
+      toast.success('Post updated successfully!')
+    } catch (err: any) {
+      console.error('Error updating post:', err)
+      if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+        // Mock post update for demo
+        setPosts(prev => prev.map(p => p._id === editingPostId ? {
+          ...p,
+          title: editPost.title,
+          content: editPost.content,
+          tags: editPost.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag),
+        } : p))
+        setEditingPostId(null)
+        setEditPost({ title: '', content: '', tags: '' })
+        toast.success('Post updated (demo mode)!')
+      } else {
+        toast.error('Failed to update post')
+      }
+    }
+  }
+
+  const startEdit = (post: Post) => {
+    setEditingPostId(post._id)
+    setEditPost({
+      title: post.title,
+      content: post.content,
+      tags: post.tags?.join(', ') || ''
+    })
+  }
+
+  const cancelEdit = () => {
+    setEditingPostId(null)
+    setEditPost({ title: '', content: '', tags: '' })
+  }
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -182,20 +236,58 @@ export default function Main() {
           ) : (
             posts.map((post) => (
               <div key={post._id} className={styles.post}>
-                <h3>{post.title}</h3>
-                <p>{post.content}</p>
-                <small>
-                  By {post.author} on{" "}
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </small>
-                {post.tags && post.tags.length > 0 && (
-                  <div className={styles.tags}>
-                    {post.tags.map((tag, index) => (
-                      <span key={index} className={styles.tag}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                {editingPostId === post._id ? (
+                  <form onSubmit={handleEditPost} className={styles.editForm}>
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Post title"
+                        value={editPost.title}
+                        onChange={(e) => setEditPost(prev => ({ ...prev, title: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <textarea
+                        placeholder="Post content"
+                        value={editPost.content}
+                        onChange={(e) => setEditPost(prev => ({ ...prev, content: e.target.value }))}
+                        rows={4}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Tags (comma separated)"
+                        value={editPost.tags}
+                        onChange={(e) => setEditPost(prev => ({ ...prev, tags: e.target.value }))}
+                      />
+                    </div>
+                    <div className={styles.editButtons}>
+                      <button type="submit">Save</button>
+                      <button type="button" onClick={cancelEdit}>Cancel</button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <h3>{post.title}</h3>
+                    <p>{post.content}</p>
+                    <small>By {post.author} on {new Date(post.createdAt).toLocaleDateString()}</small>
+                    {post.tags && post.tags.length > 0 && (
+                      <div className={styles.tags}>
+                        {post.tags.map((tag, index) => (
+                          <span key={index} className={styles.tag}>{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                    <button 
+                      className={styles.editButton}
+                      onClick={() => startEdit(post)}
+                    >
+                      Edit
+                    </button>
+                  </>
                 )}
               </div>
             ))

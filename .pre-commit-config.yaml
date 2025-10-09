@@ -19,14 +19,27 @@ repos:
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v9.15.0
     hooks:
-      - id: eslint
-        files: \.(js|ts|jsx|tsx)$
-        types: [file]
+      - id: eslint-backend
+        name: eslint backend
+        entry: eslint
+        args: [--config, tech_challenge1/backend/eslint.config.js, --fix]
+        language: system
+        files: tech_challenge1/backend/.*\.(js)$
+        pass_filenames: true
+        additional_dependencies:
+          - eslint@^9.32.0
+
+      - id: eslint-frontend
+        name: eslint frontend
+        entry: eslint
+        args: [--config, tech_challenge1/frontend/eslint.config.js, --fix]
+        language: system
+        files: tech_challenge1/frontend/.*\.(ts|tsx)$
+        pass_filenames: true
         additional_dependencies:
           - eslint@^9.32.0
           - "@typescript-eslint/parser@^8.17.0"
           - "@typescript-eslint/eslint-plugin@^8.17.0"
-        args: [--fix]
 
 ci:
   autofix_commit_msg: |

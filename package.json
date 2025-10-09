@@ -11,7 +11,12 @@
     "test": "cd tech_challenge1/backend && npm test",
     "test:ci": "cd tech_challenge1/backend && npm run test:ci",
     "test:coverage": "cd tech_challenge1/backend && npm run test:coverage",
-    "lint": "cd tech_challenge1/backend && npm run lint && cd ../frontend && npm run lint"
+    "lint": "cd tech_challenge1/backend && npm run lint",
+    "prepare": "is-ci || husky",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report"
   },
   "engines": {
     "node": ">=20.0.0",
@@ -24,6 +29,17 @@
   "author": "Mauricio Gioachini",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "husky": "^9.1.7",
+    "is-ci": "^3.0.1",
+    "lint-staged": "^16.1.2",
+    "playwright": "^1.56.0"
+  },
+  "lint-staged": {
+    "tech_challenge1/backend/**/*.js": [
+      "cd tech_challenge1/backend && npm run lint -- --fix",
+      "cd tech_challenge1/backend && npm test -- --passWithNoTests"
+    ]
     "prettier": "^3.3.3"
   },
   "workspaces": [
