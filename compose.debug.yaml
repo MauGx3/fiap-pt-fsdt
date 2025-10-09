@@ -1,12 +1,65 @@
+version: '3.9'
+
 services:
+  mongo:
+    image: mongo:7.0
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: fiap-blog
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
   backend:
-    image: backend
     build:
       context: tech_challenge1/backend
       dockerfile: ./Dockerfile
+    image: fiap-pt-fsdt-backend:debug
+    depends_on:
+      mongo:
+        condition: service_healthy
     environment:
       NODE_ENV: development
+      PORT: 3000
+      MONGO_URI: mongodb://mongo:27017/fiap-blog
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your .env file before running docker compose}
+      JWT_EXPIRES_IN: 7d
     ports:
-      - 3000:3000
+      - ${BACKEND_PORT:-3000}:3000
       - 9229:9229
-    command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+    command: ['node', '--inspect=0.0.0.0:9229', 'index.js']
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:3000/health || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  frontend:
+    build:
+      context: tech_challenge1/frontend
+      dockerfile: ./Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+    image: fiap-pt-fsdt-frontend:debug
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - ${FRONTEND_PORT:-8080}:8080
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:8080/healthz || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  mongo_data:
