@@ -100,3 +100,73 @@
   color: red;
   font-weight: bold;
 }
+
+.editButton {
+  background: #ffc107;
+  color: #333;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.editButton:hover {
+  background: #e0a800;
+}
+
+.editForm {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.editForm div {
+  margin-bottom: 12px;
+}
+
+.editForm input,
+.editForm textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.editForm textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.editButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.editButtons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.editButtons button[type="submit"] {
+  background: #28a745;
+  color: white;
+}
+
+.editButtons button[type="submit"]:hover {
+  background: #218838;
+}
+
+.editButtons button[type="button"] {
+  background: #6c757d;
+  color: white;
+}
+
+.editButtons button[type="button"]:hover {
+  background: #5a6268;
+}
