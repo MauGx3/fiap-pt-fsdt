@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including devDependencies for build)
-RUN npm ci --include=dev && npm cache clean --force
+RUN npm config set strict-ssl false && npm install && npm cache clean --force
 
 # Copy source code (this invalidates cache if source changes)
 COPY . .
