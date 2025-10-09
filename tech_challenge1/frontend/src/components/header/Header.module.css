@@ -1,10 +1,109 @@
-.header{
-  width:100%;
-  padding:16px 24px;
-  background:#1f2937;
-  color:#ffffff;
+.header {
+  width: 100%;
+  padding: 16px 24px;
+  background: #1f2937;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
 }
-.header h1{
-  margin:0;
-  font-size:1.25rem;
+
+.header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+}
+
+.nav button {
+  background: transparent;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.nav button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav button.active {
+  background: #ffffff;
+  color: #1f2937;
+}
+
+.authModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.authForm {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 300px;
+  max-width: 90vw;
+}
+
+.authForm h3 {
+  margin-top: 0;
+  color: #333;
+  text-align: center;
+}
+
+.authForm input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.authButtons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.authButtons button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.authButtons button:first-child {
+  background: #007bff;
+  color: white;
+}
+
+.authButtons button:last-child {
+  background: #6c757d;
+  color: white;
+}
+
+.switchMode {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
 }

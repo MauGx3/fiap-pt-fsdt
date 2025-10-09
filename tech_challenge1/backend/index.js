@@ -1,3 +1,6 @@
+// Load environment variables
+import 'dotenv/config';
+
 // Framework imports
 import express, { json } from 'express';
 import { connect } from 'mongoose';
@@ -20,7 +23,7 @@ app.use(json({ limit: '10mb' })); // Add payload size limit
 
 // Routes
 app.use('/api/auth', authRoutes); // Authentication routes
-app.use('/api/posts', postsRoutes); // Posts routes  
+app.use('/api/posts', postsRoutes); // Posts routes
 app.use('/api/users', usersRoutes); // User management routes
 
 // Health check endpoint

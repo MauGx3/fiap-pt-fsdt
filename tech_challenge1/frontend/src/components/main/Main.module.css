@@ -3,6 +3,67 @@
   padding: 24px;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.createButton {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.createButton:hover {
+  background: #0056b3;
+}
+
+.createForm {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.createForm div {
+  margin-bottom: 12px;
+}
+
+.createForm input,
+.createForm textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.createForm textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.createForm button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.createForm button:hover {
+  background: #218838;
+}
+
 .post {
   margin-bottom: 20px;
   padding: 16px;
