@@ -16,23 +16,17 @@ repos:
         files: \.(js|ts|jsx|tsx|json|yaml|yml|md)$
         exclude: package-lock\.json
 
-  - repo: local
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.15.0
     hooks:
-      - id: eslint-backend
-        name: eslint backend
-        entry: bash
-        args: [-c, "cd tech_challenge1/backend && npm run lint -- --fix"]
-        language: system
-        files: tech_challenge1/backend/.*\.(js)$
-        pass_filenames: false
-
-      - id: eslint-frontend
-        name: eslint frontend
-        entry: bash
-        args: [-c, "cd tech_challenge1/frontend && npm run lint -- --fix"]
-        language: system
-        files: tech_challenge1/frontend/.*\.(ts|tsx)$
-        pass_filenames: false
+      - id: eslint
+        files: \.(js|ts|jsx|tsx)$
+        types: [file]
+        additional_dependencies:
+          - eslint@^9.32.0
+          - "@typescript-eslint/parser@^8.17.0"
+          - "@typescript-eslint/eslint-plugin@^8.17.0"
+        args: [--fix]
 
 ci:
   autofix_commit_msg: |
