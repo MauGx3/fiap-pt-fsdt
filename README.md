@@ -115,3 +115,4 @@ Os containers possuem health checks configurados: o frontend somente inicia apó
 - `PORT`: Porta do backend (padrão: 3000).
 - `NODE_ENV`: Ambiente de execução.
 - `JWT_EXPIRES_IN`: Tempo de expiração do token JWT (padrão `7d`).
+- `CORS_ALLOWED_ORIGINS`: Lista de origens permitidas para CORS, separadas por vírgula (padrão: `http://localhost:8080,http://localhost:5173`). Use `*` apenas se a API for pública e não houver riscos de segurança.
