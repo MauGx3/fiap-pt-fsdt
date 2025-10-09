@@ -1,24 +1,24 @@
-import React, { useEffect } from 'react'
-import { createGlobalStyle } from 'styled-components'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useTheme } from './theme/ThemeContext'
-import Header from './components/header/Header'
-import Main from './components/main/Main'
-import UserProfile from './components/userProfile/UserProfile'
-import Footer from './components/footer/Footer'
-import ErrorPage from './components/ErrorPage'
-import './App.css'
+import React, { useEffect } from "react";
+import { createGlobalStyle } from "styled-components";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useTheme } from "./theme/ThemeContext";
+import Header from "./components/header/Header";
+import Main from "./components/main/Main";
+import UserProfile from "./components/userProfile/UserProfile";
+import Footer from "./components/footer/Footer";
+import ErrorPage from "./components/ErrorPage";
+import "./App.css";
 
 const Global = createGlobalStyle<{ theme: any }>`
   body { margin:0; font-family: system-ui, sans-serif; background: ${({ theme }) => theme.bg}; color: ${({ theme }) => theme.fg}; }
-`
+`;
 
 export default function App(): JSX.Element {
-  const { theme, toggle } = useTheme()
+  const { theme, toggle } = useTheme();
 
   useEffect(() => {
-    console.log('App mounted')
-  }, [])
+    console.log("App mounted");
+  }, []);
 
   return (
     <BrowserRouter>
@@ -44,5 +44,5 @@ export default function App(): JSX.Element {
         <Footer />
       </div>
     </BrowserRouter>
-  )
+  );
 }

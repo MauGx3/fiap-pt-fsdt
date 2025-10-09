@@ -1,26 +1,26 @@
-import Post from './models/Post.js';
+import Post from "./models/Post.js";
 
 export async function getAllPosts(req, res) {
   try {
     const posts = await Post.find();
     res.json(posts);
   } catch {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
 export async function getPostById(req, res) {
   try {
     // Validate that id is a string to prevent NoSQL injection
-    if (typeof req.params.id !== 'string') {
-      return res.status(400).json({ error: 'Invalid ID format' });
+    if (typeof req.params.id !== "string") {
+      return res.status(400).json({ error: "Invalid ID format" });
     }
-    
+
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+    if (!post) return res.status(404).json({ error: "Post not found" });
     res.json(post);
   } catch {
-    res.status(400).json({ error: 'Invalid ID format' });
+    res.status(400).json({ error: "Invalid ID format" });
   }
 }
 
@@ -31,7 +31,7 @@ export async function createPost(req, res) {
     // Validate required fields
     if (!title || !content) {
       return res.status(400).json({
-        error: 'Title and content are required'
+        error: "Title and content are required",
       });
     }
 
@@ -41,23 +41,23 @@ export async function createPost(req, res) {
     const newPost = new Post({
       title,
       content,
-      author
+      author,
     });
 
     await newPost.save();
 
     res.status(201).json({
-      message: 'Post created successfully',
-      post: newPost
+      message: "Post created successfully",
+      post: newPost,
     });
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err.name === "ValidationError") {
       return res.status(400).json({
-        error: 'Validation failed: ' + err.message
+        error: "Validation failed: " + err.message,
       });
     }
-    console.error('Create post error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Create post error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -67,32 +67,32 @@ export async function updatePost(req, res) {
     const { title, content } = req.body;
 
     // Validate that postId is a string to prevent NoSQL injection
-    if (typeof postId !== 'string') {
-      return res.status(400).json({ error: 'Invalid post ID format' });
+    if (typeof postId !== "string") {
+      return res.status(400).json({ error: "Invalid post ID format" });
     }
 
     // Validate input types to prevent NoSQL injection
-    if (title && typeof title !== 'string') {
+    if (title && typeof title !== "string") {
       return res.status(400).json({
-        error: 'Invalid title format'
+        error: "Invalid title format",
       });
     }
-    if (content && typeof content !== 'string') {
+    if (content && typeof content !== "string") {
       return res.status(400).json({
-        error: 'Invalid content format'
+        error: "Invalid content format",
       });
     }
 
     // Find the post first to check ownership
     const existingPost = await Post.findById(postId);
     if (!existingPost) {
-      return res.status(404).json({ error: 'Post not found' });
+      return res.status(404).json({ error: "Post not found" });
     }
 
     // Check if user owns the post or is admin
-    if (existingPost.author !== req.user.uuid && req.user.role !== 'admin') {
+    if (existingPost.author !== req.user.uuid && req.user.role !== "admin") {
       return res.status(403).json({
-        error: 'Access denied. You can only update your own posts.'
+        error: "Access denied. You can only update your own posts.",
       });
     }
 
@@ -105,19 +105,19 @@ export async function updatePost(req, res) {
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
       { $set: updateData },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     res.json({
-      message: 'Post updated successfully',
-      post: updatedPost
+      message: "Post updated successfully",
+      post: updatedPost,
     });
   } catch (err) {
-    if (err.name === 'CastError') {
-      return res.status(400).json({ error: 'Invalid post ID format' });
+    if (err.name === "CastError") {
+      return res.status(400).json({ error: "Invalid post ID format" });
     }
-    console.error('Update post error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Update post error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -126,68 +126,71 @@ export async function deletePost(req, res) {
     const postId = req.params.id;
 
     // Validate that postId is a string to prevent NoSQL injection
-    if (typeof postId !== 'string') {
-      return res.status(400).json({ error: 'Invalid post ID format' });
+    if (typeof postId !== "string") {
+      return res.status(400).json({ error: "Invalid post ID format" });
     }
 
     // Find the post first to check ownership
     const existingPost = await Post.findById(postId);
     if (!existingPost) {
-      return res.status(404).json({ error: 'Post not found' });
+      return res.status(404).json({ error: "Post not found" });
     }
 
     // Check if user owns the post or is admin
-    if (existingPost.author !== req.user.uuid && req.user.role !== 'admin') {
+    if (existingPost.author !== req.user.uuid && req.user.role !== "admin") {
       return res.status(403).json({
-        error: 'Access denied. You can only delete your own posts.'
+        error: "Access denied. You can only delete your own posts.",
       });
     }
 
     const deletedPost = await Post.findByIdAndDelete(postId);
 
     res.json({
-      message: 'Post deleted successfully',
-      post: deletedPost
+      message: "Post deleted successfully",
+      post: deletedPost,
     });
   } catch (err) {
-    if (err.name === 'CastError') {
-      return res.status(400).json({ error: 'Invalid post ID format' });
+    if (err.name === "CastError") {
+      return res.status(400).json({ error: "Invalid post ID format" });
     }
-    console.error('Delete post error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Delete post error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
 export async function searchPosts(req, res) {
   try {
     const query = req.query.query;
-    
+
     // Validate query parameter
-    if (!query) return res.status(400).json({ error: 'Missing query parameter' });
-    
+    if (!query)
+      return res.status(400).json({ error: "Missing query parameter" });
+
     // Validate input type to prevent injection
-    if (typeof query !== 'string') {
-      return res.status(400).json({ error: 'Invalid query format' });
+    if (typeof query !== "string") {
+      return res.status(400).json({ error: "Invalid query format" });
     }
-    
+
     // Sanitize query - remove regex special characters to prevent ReDoS
-    const sanitizedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
-    
+    const sanitizedQuery = query
+      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      .toLowerCase();
+
     // Limit query length to prevent excessive processing
     if (sanitizedQuery.length > 100) {
-      return res.status(400).json({ error: 'Query too long' });
+      return res.status(400).json({ error: "Query too long" });
     }
 
     const posts = await Post.find({
       $or: [
-        { title: { $regex: sanitizedQuery, $options: 'i' } },
-        { content: { $regex: sanitizedQuery, $options: 'i' } }
-      ]
+        { title: { $regex: sanitizedQuery, $options: "i" } },
+        { content: { $regex: sanitizedQuery, $options: "i" } },
+      ],
     });
 
     res.json(posts);
   } catch (err) {
-    console.error('Search posts error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Search posts error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }

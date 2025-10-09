@@ -27,19 +27,25 @@ tests/
 ## Test Categories
 
 ### Unit Tests
+
 Test individual components in isolation:
+
 - **Models**: User and Post model validation, methods, and schemas
 - **Middleware**: Authentication, authorization, and error handling
 - **Controllers**: Business logic and data processing
 
 ### Integration Tests
+
 Test API endpoints and workflows:
+
 - **Routes**: HTTP endpoints, request/response handling
 - **Authentication**: Login, registration, token management
 - **Authorization**: Role-based access control
 
 ### End-to-End Tests
+
 Test complete user journeys:
+
 - **User Registration → Login → Create Post → Update Post → Delete Post**
 - **User Profile Management**
 - **Multi-user Scenarios**
@@ -108,11 +114,13 @@ npm run test:script all
 ## Test Environment
 
 ### Database
+
 - Uses **MongoDB Memory Server** for isolated testing
 - Each test gets a fresh database instance
 - Automatic cleanup between tests
 
 ### Authentication
+
 - Test JWT secret: `test-jwt-secret-key-for-testing-only`
 - Token expiration: 1 hour (configurable)
 - Automatic token generation for authenticated tests
@@ -124,22 +132,23 @@ The `setup.js` file provides global utilities:
 ```javascript
 // Create test user
 const user = await global.testUtils.createTestUser(User, {
-  name: 'Test User',
-  email: 'test@example.com',
-  password: 'password123',
-  role: 'author'
+  name: "Test User",
+  email: "test@example.com",
+  password: "password123",
+  role: "author",
 });
 
 // Create test post
 const post = await global.testUtils.createTestPost(Post, user, {
-  title: 'Test Post',
-  content: 'Test content'
+  title: "Test Post",
+  content: "Test content",
 });
 ```
 
 ## Test Coverage
 
 Current coverage targets:
+
 - **Branches**: 80%
 - **Functions**: 80%
 - **Lines**: 80%
@@ -158,130 +167,144 @@ open coverage/lcov-report/index.html
 ## Test Data Patterns
 
 ### User Test Data
+
 ```javascript
 const userData = {
-  name: 'Test User',
-  email: 'test@example.com',
-  password: 'password123',
-  role: 'author' // or 'admin', 'reader'
+  name: "Test User",
+  email: "test@example.com",
+  password: "password123",
+  role: "author", // or 'admin', 'reader'
 };
 ```
 
 ### Post Test Data
+
 ```javascript
 const postData = {
-  title: 'Test Post Title',
-  content: 'Test post content',
-  author: user.uuid
+  title: "Test Post Title",
+  content: "Test post content",
+  author: user.uuid,
 };
 ```
 
 ### Authentication Headers
+
 ```javascript
 const response = await request(app)
-  .get('/api/posts')
-  .set('Authorization', `Bearer ${token}`)
+  .get("/api/posts")
+  .set("Authorization", `Bearer ${token}`)
   .expect(200);
 ```
 
 ## Best Practices
 
 ### 1. Test Isolation
+
 - Each test should be independent
 - Use `beforeEach` for setup
 - Clean database between tests
 
 ### 2. Descriptive Test Names
+
 ```javascript
-test('should reject login with invalid password', async () => {
+test("should reject login with invalid password", async () => {
   // Test implementation
 });
 ```
 
 ### 3. Test Edge Cases
+
 - Invalid input data
 - Authorization failures
 - Network errors
 - Database validation errors
 
 ### 4. Mock External Dependencies
+
 - Database operations in unit tests
 - HTTP requests to external services
 - File system operations
 
 ### 5. Test Error Conditions
+
 ```javascript
-test('should return 404 for non-existent post', async () => {
+test("should return 404 for non-existent post", async () => {
   const response = await request(app)
-    .get('/api/posts/nonexistent-id')
+    .get("/api/posts/nonexistent-id")
     .expect(404);
-  
-  expect(response.body.error).toBe('Post not found');
+
+  expect(response.body.error).toBe("Post not found");
 });
 ```
 
 ## Common Test Patterns
 
 ### Authentication Test
+
 ```javascript
-describe('Protected Route', () => {
+describe("Protected Route", () => {
   let authToken;
-  
+
   beforeEach(async () => {
     const user = await global.testUtils.createTestUser(User);
     authToken = generateToken(user);
   });
-  
-  test('should allow access with valid token', async () => {
+
+  test("should allow access with valid token", async () => {
     await request(app)
-      .get('/protected-endpoint')
-      .set('Authorization', `Bearer ${authToken}`)
+      .get("/protected-endpoint")
+      .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
   });
 });
 ```
 
 ### Database Validation Test
+
 ```javascript
-test('should validate required fields', async () => {
+test("should validate required fields", async () => {
   const response = await request(app)
-    .post('/api/posts')
-    .set('Authorization', `Bearer ${token}`)
-    .send({ title: 'Missing content' })
+    .post("/api/posts")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ title: "Missing content" })
     .expect(400);
-  
-  expect(response.body.error).toContain('required');
+
+  expect(response.body.error).toContain("required");
 });
 ```
 
 ### Authorization Test
+
 ```javascript
-test('should enforce ownership for updates', async () => {
+test("should enforce ownership for updates", async () => {
   const otherUserPost = await createPostByOtherUser();
-  
+
   const response = await request(app)
     .put(`/api/posts/${otherUserPost._id}`)
-    .set('Authorization', `Bearer ${currentUserToken}`)
-    .send({ title: 'Hacked!' })
+    .set("Authorization", `Bearer ${currentUserToken}`)
+    .send({ title: "Hacked!" })
     .expect(403);
-  
-  expect(response.body.error).toContain('Access denied');
+
+  expect(response.body.error).toContain("Access denied");
 });
 ```
 
 ## Debugging Tests
 
 ### Run Single Test File
+
 ```bash
 npm test -- tests/routes/auth.test.js
 ```
 
 ### Run Single Test Case
+
 ```bash
 npm test -- --testNamePattern="should login with valid credentials"
 ```
 
 ### Debug Mode
+
 ```bash
 npm test -- --runInBand --detectOpenHandles
 ```
@@ -296,7 +319,7 @@ The test suite is designed to run in CI/CD environments:
   run: |
     npm ci
     npm run test:coverage
-    
+
 - name: Upload Coverage
   uses: codecov/codecov-action@v1
 ```
@@ -304,26 +327,28 @@ The test suite is designed to run in CI/CD environments:
 ## Performance Testing
 
 ### Load Testing
+
 ```javascript
-test('should handle multiple concurrent requests', async () => {
-  const promises = Array(10).fill().map(() => 
-    request(app).get('/api/posts').expect(200)
-  );
-  
+test("should handle multiple concurrent requests", async () => {
+  const promises = Array(10)
+    .fill()
+    .map(() => request(app).get("/api/posts").expect(200));
+
   const responses = await Promise.all(promises);
-  responses.forEach(response => {
+  responses.forEach((response) => {
     expect(response.body).toBeDefined();
   });
 });
 ```
 
 ### Response Time Testing
+
 ```javascript
-test('should respond within acceptable time', async () => {
+test("should respond within acceptable time", async () => {
   const start = Date.now();
-  await request(app).get('/api/posts').expect(200);
+  await request(app).get("/api/posts").expect(200);
   const duration = Date.now() - start;
-  
+
   expect(duration).toBeLessThan(1000); // 1 second
 });
 ```
@@ -341,24 +366,24 @@ When adding new features:
 ### Example: Adding New Route Test
 
 ```javascript
-describe('POST /api/new-feature', () => {
-  test('should create new feature successfully', async () => {
-    const featureData = { name: 'Test Feature' };
-    
+describe("POST /api/new-feature", () => {
+  test("should create new feature successfully", async () => {
+    const featureData = { name: "Test Feature" };
+
     const response = await request(app)
-      .post('/api/new-feature')
-      .set('Authorization', `Bearer ${authToken}`)
+      .post("/api/new-feature")
+      .set("Authorization", `Bearer ${authToken}`)
       .send(featureData)
       .expect(201);
-    
-    expect(response.body.message).toBe('Feature created successfully');
+
+    expect(response.body.message).toBe("Feature created successfully");
     expect(response.body.feature.name).toBe(featureData.name);
   });
-  
-  test('should require authentication', async () => {
+
+  test("should require authentication", async () => {
     await request(app)
-      .post('/api/new-feature')
-      .send({ name: 'Test' })
+      .post("/api/new-feature")
+      .send({ name: "Test" })
       .expect(401);
   });
 });
