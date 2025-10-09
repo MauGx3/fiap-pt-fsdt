@@ -1,31 +1,28 @@
 import React from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import { useTheme } from './theme/ThemeContext'
+import Header from './components/header/Header'
+import Main from './components/main/Main'
+import Footer from './components/footer/Footer'
+import './App.css'
 
 const Global = createGlobalStyle<{ theme: any }>`
   body { margin:0; font-family: system-ui, sans-serif; background: ${({ theme }) => theme.bg}; color: ${({ theme }) => theme.fg}; }
 `
 
-const Container = styled.main`
-  display:flex; min-height:100vh; align-items:center; justify-content:center;
-`
-const Card = styled.div`
-  padding:24px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.08);
-  background: ${({ theme }) => theme.card};
-`
-
 export default function App(): JSX.Element {
-    const { theme, toggle } = useTheme()
-    return (
-        <>
-            <Global theme={theme} />
-            <Container>
-                <Card theme={theme}>
-                    <h1>FIAP Frontend</h1>
-                    <p>Theme: {theme.name}</p>
-                    <button onClick={toggle}>Toggle theme</button>
-                </Card>
-            </Container>
-        </>
-    )
+  const { theme, toggle } = useTheme()
+  return (
+    <>
+      <Global theme={theme} />
+      <div className="app">
+        <Header />
+        <div className="toolbar">
+          <button onClick={toggle}>Toggle theme</button>
+        </div>
+        <Main />
+        <Footer />
+      </div>
+    </>
+  )
 }
