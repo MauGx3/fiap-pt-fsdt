@@ -40,6 +40,7 @@
       "cd tech_challenge1/backend && npm run lint -- --fix",
       "cd tech_challenge1/backend && npm test -- --passWithNoTests"
     ]
+    "prettier": "^3.3.3"
   },
   "workspaces": [
     "tech_challenge1/backend"
