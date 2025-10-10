@@ -17,6 +17,7 @@
 .nav {
   display: flex;
   gap: 12px;
+  align-items: center;
 }
 
 .nav button,
@@ -43,6 +44,21 @@
 .nav a.active {
   background: #ffffff;
   color: #1f2937;
+}
+
+.userInfo {
+  color: #ffffff;
+  font-size: 0.9rem;
+  margin-right: 12px;
+}
+
+.logoutButton {
+  background: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.logoutButton:hover {
+  background: #c82333 !important;
 }
 
 .authModal {

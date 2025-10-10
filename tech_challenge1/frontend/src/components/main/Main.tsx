@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styles from './Main.module.css'
 import { postsAPI } from '../../api'
+import { useAuth } from '../../contexts/AuthContext'
 import LoadingSpinner from '../LoadingSpinner'
 import ErrorPage from '../ErrorPage'
 import toast, { Toaster } from 'react-hot-toast'
@@ -15,6 +16,7 @@ interface Post {
 }
 
 export default function Main() {
+  const { isAuthenticated } = useAuth()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -123,15 +125,17 @@ export default function Main() {
       <Toaster position="top-right" />
       <div className={styles.header}>
         <h2>Posts</h2>
-        <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className={styles.createButton}
-        >
-          {showCreateForm ? 'Cancel' : 'Create Post'}
-        </button>
+        {isAuthenticated && (
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className={styles.createButton}
+          >
+            {showCreateForm ? 'Cancel' : 'Create Post'}
+          </button>
+        )}
       </div>
 
-      {showCreateForm && (
+      {showCreateForm && isAuthenticated && (
         <form onSubmit={handleCreatePost} className={styles.createForm}>
           <div>
             <input
@@ -217,18 +221,22 @@ export default function Main() {
                         ))}
                       </div>
                     )}
-                    <button
-                      className={styles.editButton}
-                      onClick={() => startEdit(post)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleDeletePost(post._id)}
-                    >
-                      Delete
-                    </button>
+                    {isAuthenticated && (
+                      <>
+                        <button
+                          className={styles.editButton}
+                          onClick={() => startEdit(post)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className={styles.deleteButton}
+                          onClick={() => handleDeletePost(post._id)}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </>
                 )}
               </div>

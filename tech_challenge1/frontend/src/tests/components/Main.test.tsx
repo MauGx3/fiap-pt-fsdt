@@ -5,6 +5,10 @@ import Main from '../../components/main/Main'
 import { renderWithProviders } from '../utils'
 import toast from 'react-hot-toast'
 import { postsAPI } from '../../api'
+import { AuthProvider } from '../../contexts/AuthContext'
+import { ThemeProvider } from '../../theme/ThemeContext'
+import { MemoryRouter } from 'react-router-dom'
+import React from 'react'
 
 vi.mock('../../api', () => ({
     postsAPI: {
@@ -12,7 +16,16 @@ vi.mock('../../api', () => ({
         create: vi.fn(),
         update: vi.fn(),
         delete: vi.fn()
-    }
+    },
+    isAuthenticated: vi.fn(() => true)
+}))
+
+vi.mock('../../contexts/AuthContext', () => ({
+    useAuth: () => ({
+        isAuthenticated: true,
+        user: { id: '1', name: 'Test User', email: 'test@example.com', role: 'user' }
+    }),
+    AuthProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="auth-provider">{children}</div>
 }))
 
 const postsAPIMock = postsAPI as unknown as {
@@ -20,6 +33,14 @@ const postsAPIMock = postsAPI as unknown as {
     create: ReturnType<typeof vi.fn>
     update: ReturnType<typeof vi.fn>
     delete: ReturnType<typeof vi.fn>
+}
+
+const renderWithAuth = (ui: React.ReactElement) => {
+    return renderWithProviders(
+        <AuthProvider>
+            {ui}
+        </AuthProvider>
+    )
 }
 
 describe('Main component', () => {
@@ -44,7 +65,7 @@ describe('Main component', () => {
         ]
         postsAPIMock.getAll.mockResolvedValue(posts)
 
-        renderWithProviders(<Main />)
+        renderWithAuth(<Main />)
 
         expect(screen.getByText(/loading/i)).toBeInTheDocument()
         expect(await screen.findByText('First Post')).toBeInTheDocument()
@@ -57,7 +78,7 @@ describe('Main component', () => {
         error.code = 'ECONNREFUSED'
         postsAPIMock.getAll.mockRejectedValue(error)
 
-        renderWithProviders(<Main />)
+        renderWithAuth(<Main />)
 
         expect(await screen.findByText(/failed to load posts/i)).toBeInTheDocument()
         expect(toast.error).toHaveBeenCalledWith('Failed to load posts. Please try again.')
@@ -66,7 +87,7 @@ describe('Main component', () => {
     it('shows error page on unexpected failure', async () => {
         postsAPIMock.getAll.mockRejectedValue(new Error('Boom'))
 
-        renderWithProviders(<Main />)
+        renderWithAuth(<Main />)
 
         expect(await screen.findByText(/failed to load posts/i)).toBeInTheDocument()
         expect(toast.error).toHaveBeenCalledWith('Failed to load posts. Please try again.')
@@ -84,7 +105,7 @@ describe('Main component', () => {
         }
         postsAPIMock.create.mockResolvedValue(createdPost)
 
-        renderWithProviders(<Main />)
+        renderWithAuth(<Main />)
         const user = userEvent.setup()
 
         await waitFor(() => expect(postsAPIMock.getAll).toHaveBeenCalled())
