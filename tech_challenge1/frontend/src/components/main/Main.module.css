@@ -116,6 +116,22 @@
   background: #e0a800;
 }
 
+.deleteButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+  margin-left: 8px;
+}
+
+.deleteButton:hover {
+  background: #c82333;
+}
+
 .editForm {
   padding: 0;
   border: none;

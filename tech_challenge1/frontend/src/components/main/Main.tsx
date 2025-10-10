@@ -18,7 +18,6 @@ export default function Main() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [count, setCount] = useState(0)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newPost, setNewPost] = useState({ title: '', content: '', tags: '' })
   const [editingPostId, setEditingPostId] = useState<string | null>(null)
@@ -45,23 +44,7 @@ export default function Main() {
       toast.success('Post created successfully!')
     } catch (err: any) {
       console.error('Error creating post:', err)
-      if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
-        // Mock post creation for demo
-        const mockPost: Post = {
-          _id: Date.now().toString(),
-          title: newPost.title,
-          content: newPost.content,
-          author: 'Demo User',
-          tags: newPost.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag),
-          createdAt: new Date().toISOString()
-        }
-        setPosts(prev => [mockPost, ...prev])
-        setNewPost({ title: '', content: '', tags: '' })
-        setShowCreateForm(false)
-        toast.success('Post created (demo mode)!')
-      } else {
-        toast.error('Failed to create post')
-      }
+      toast.error('Failed to create post')
     }
   }
 
@@ -86,20 +69,7 @@ export default function Main() {
       toast.success('Post updated successfully!')
     } catch (err: any) {
       console.error('Error updating post:', err)
-      if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
-        // Mock post update for demo
-        setPosts(prev => prev.map(p => p._id === editingPostId ? {
-          ...p,
-          title: editPost.title,
-          content: editPost.content,
-          tags: editPost.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag),
-        } : p))
-        setEditingPostId(null)
-        setEditPost({ title: '', content: '', tags: '' })
-        toast.success('Post updated (demo mode)!')
-      } else {
-        toast.error('Failed to update post')
-      }
+      toast.error('Failed to update post')
     }
   }
 
@@ -117,6 +87,19 @@ export default function Main() {
     setEditPost({ title: '', content: '', tags: '' })
   }
 
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return
+
+    try {
+      await postsAPI.delete(postId)
+      setPosts(prev => prev.filter(p => p._id !== postId))
+      toast.success('Post deleted successfully!')
+    } catch (err: any) {
+      console.error('Error deleting post:', err)
+      toast.error('Failed to delete post')
+    }
+  }
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -125,33 +108,8 @@ export default function Main() {
         toast.success('Posts loaded successfully!')
       } catch (err: any) {
         console.error('Error fetching posts:', err)
-
-        // Fallback to mock data if backend is not available
-        if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
-          console.log('Backend not available, using mock data')
-          setPosts([
-            {
-              _id: '1',
-              title: 'Welcome to FIAP Blog',
-              content: 'This is a sample post to demonstrate the blog functionality. The backend API is not currently running, but you can see how the UI works with mock data.',
-              author: 'System',
-              tags: ['welcome', 'demo'],
-              createdAt: new Date().toISOString()
-            },
-            {
-              _id: '2',
-              title: 'Getting Started with React and TypeScript',
-              content: 'React with TypeScript provides excellent developer experience with type safety and modern JavaScript features.',
-              author: 'Developer',
-              tags: ['react', 'typescript', 'frontend'],
-              createdAt: new Date(Date.now() - 86400000).toISOString()
-            }
-          ])
-          toast('Using demo data - backend not available', { icon: 'ℹ️' })
-        } else {
-          setError('Failed to load posts')
-          toast.error('Failed to load posts. Please try again.')
-        }
+        setError('Failed to load posts')
+        toast.error('Failed to load posts. Please try again.')
       } finally {
         setLoading(false)
       }
@@ -259,11 +217,17 @@ export default function Main() {
                         ))}
                       </div>
                     )}
-                    <button 
+                    <button
                       className={styles.editButton}
                       onClick={() => startEdit(post)}
                     >
                       Edit
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleDeletePost(post._id)}
+                    >
+                      Delete
                     </button>
                   </>
                 )}
@@ -272,9 +236,6 @@ export default function Main() {
           )}
         </div>
       )}
-      <hr />
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
     </main>
   )
 }

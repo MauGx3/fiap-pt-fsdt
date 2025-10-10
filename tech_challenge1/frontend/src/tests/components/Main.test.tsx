@@ -52,15 +52,15 @@ describe('Main component', () => {
         expect(toast.success).toHaveBeenCalledWith('Posts loaded successfully!')
     })
 
-    it('falls back to demo data when API is unreachable', async () => {
+    it('shows error page when API is unreachable', async () => {
         const error = new Error('Network Error') as Error & { code?: string }
         error.code = 'ECONNREFUSED'
         postsAPIMock.getAll.mockRejectedValue(error)
 
         renderWithProviders(<Main />)
 
-        expect(await screen.findByText(/welcome to fiap blog/i)).toBeInTheDocument()
-        expect(toast).toHaveBeenCalledWith('Using demo data - backend not available', { icon: 'ℹ️' })
+        expect(await screen.findByText(/failed to load posts/i)).toBeInTheDocument()
+        expect(toast.error).toHaveBeenCalledWith('Failed to load posts. Please try again.')
     })
 
     it('shows error page on unexpected failure', async () => {
