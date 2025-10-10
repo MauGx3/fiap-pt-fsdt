@@ -17,13 +17,13 @@
 }
 
 .title {
-    color: #dc3545;
+    color: var(--button-danger);
     margin-bottom: 10px;
     font-size: 1.5rem;
 }
 
 .message {
-    color: #666;
+    color: var(--text-muted);
     margin-bottom: 30px;
     line-height: 1.5;
 }

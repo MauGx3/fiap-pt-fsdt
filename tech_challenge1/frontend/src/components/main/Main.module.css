@@ -27,9 +27,9 @@
 .createForm {
   margin-bottom: 24px;
   padding: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #f9f9f9;
+  background: var(--card-bg);
 }
 
 .createForm div {
@@ -40,9 +40,16 @@
 .createForm textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   font-family: inherit;
+  background: var(--input-bg);
+  color: var(--fg-color);
+}
+
+.createForm input::placeholder,
+.createForm textarea::placeholder {
+  color: var(--text-muted);
 }
 
 .createForm textarea {
@@ -67,18 +74,23 @@
 .post {
   margin-bottom: 20px;
   padding: 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #f9f9f9;
+  background: var(--card-bg);
 }
 
 .post h3 {
   margin-top: 0;
-  color: #333;
+  color: var(--text-strong);
+}
+
+.post p {
+  color: var(--fg-color);
+  line-height: 1.6;
 }
 
 .post small {
-  color: #666;
+  color: var(--text-muted);
   font-size: 0.9em;
 }
 
@@ -146,9 +158,16 @@
 .editForm textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   font-family: inherit;
+  background: var(--input-bg);
+  color: var(--fg-color);
+}
+
+.editForm input::placeholder,
+.editForm textarea::placeholder {
+  color: var(--text-muted);
 }
 
 .editForm textarea {

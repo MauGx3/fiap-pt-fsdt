@@ -13,7 +13,27 @@ import ErrorPage from './components/ErrorPage'
 import './App.css'
 
 const Global = createGlobalStyle<{ theme: any }>`
-  body { margin:0; font-family: system-ui, sans-serif; background: ${({ theme }) => theme.bg}; color: ${({ theme }) => theme.fg}; }
+  :root {
+    --bg-color: ${({ theme }) => theme.bg};
+    --fg-color: ${({ theme }) => theme.fg};
+    --card-bg: ${({ theme }) => theme.card};
+    --border-color: ${({ theme }) => theme.name === 'dark' ? '#374151' : '#ddd'};
+    --input-bg: ${({ theme }) => theme.name === 'dark' ? '#1f2937' : '#fff'};
+    --input-border: ${({ theme }) => theme.name === 'dark' ? '#4b5563' : '#ccc'};
+    --button-primary: #007bff;
+    --button-primary-hover: #0056b3;
+    --button-success: #28a745;
+    --button-success-hover: #218838;
+    --button-warning: #ffc107;
+    --button-warning-hover: #e0a800;
+    --button-danger: #dc3545;
+    --button-danger-hover: #c82333;
+    --button-secondary: #6c757d;
+    --button-secondary-hover: #5a6268;
+    --text-muted: ${({ theme }) => theme.name === 'dark' ? '#9ca3af' : '#666'};
+    --text-strong: ${({ theme }) => theme.fg};
+  }
+  body { margin:0; font-family: system-ui, sans-serif; background: var(--bg-color); color: var(--fg-color); }
 `
 
 export default function App(): JSX.Element {
