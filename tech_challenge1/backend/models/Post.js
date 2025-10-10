@@ -14,6 +14,7 @@ const postSchema = new Schema({
       message: 'Author must be a valid UUID'
     }
   },
+  tags: [{ type: String }],
   comments: [{
     user: { type: String, required: false },
     text: { type: String, required: false },

@@ -1,10 +1,31 @@
 import Post from './models/Post.js';
+import User from './models/User.js';
 
 export async function getAllPosts(req, res) {
   try {
-    const posts = await Post.find();
-    res.json(posts);
-  } catch {
+    const posts = await Post.find().sort({ createdAt: -1 });
+
+    // Get all unique author UUIDs
+    const authorUuids = [...new Set(posts.map(post => post.author))];
+
+    // Fetch user data for these UUIDs
+    const users = await User.find({ uuid: { $in: authorUuids } }, 'uuid name');
+
+    // Create a map of UUID to name
+    const userMap = users.reduce((map, user) => {
+      map[user.uuid] = user.name;
+      return map;
+    }, {});
+
+    // Add author name to each post
+    const postsWithAuthors = posts.map(post => ({
+      ...post.toObject(),
+      author: userMap[post.author] || 'Unknown Author'
+    }));
+
+    res.json(postsWithAuthors);
+  } catch (err) {
+    console.error('Get all posts error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -18,7 +39,15 @@ export async function getPostById(req, res) {
     
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
-    res.json(post);
+
+    // Get author name
+    const user = await User.findOne({ uuid: post.author }, 'name');
+    const postWithAuthor = {
+      ...post.toObject(),
+      author: user ? user.name : 'Unknown Author'
+    };
+
+    res.json(postWithAuthor);
   } catch {
     res.status(400).json({ error: 'Invalid ID format' });
   }
@@ -26,7 +55,7 @@ export async function getPostById(req, res) {
 
 export async function createPost(req, res) {
   try {
-    const { title, content } = req.body;
+    const { title, content, tags } = req.body;
 
     // Validate required fields
     if (!title || !content) {
@@ -41,7 +70,8 @@ export async function createPost(req, res) {
     const newPost = new Post({
       title,
       content,
-      author
+      author,
+      tags: tags || []
     });
 
     await newPost.save();
@@ -64,7 +94,7 @@ export async function createPost(req, res) {
 export async function updatePost(req, res) {
   try {
     const postId = req.params.id;
-    const { title, content } = req.body;
+    const { title, content, tags } = req.body;
 
     // Validate that postId is a string to prevent NoSQL injection
     if (typeof postId !== 'string') {
@@ -80,6 +110,11 @@ export async function updatePost(req, res) {
     if (content && typeof content !== 'string') {
       return res.status(400).json({
         error: 'Invalid content format'
+      });
+    }
+    if (tags && !Array.isArray(tags)) {
+      return res.status(400).json({
+        error: 'Invalid tags format'
       });
     }
 
@@ -98,8 +133,9 @@ export async function updatePost(req, res) {
 
     // Prepare update data with only validated, whitelisted fields
     const updateData = {};
-    if (title) updateData.title = title;
-    if (content) updateData.content = content;
+    if (title !== undefined) updateData.title = title;
+    if (content !== undefined) updateData.content = content;
+    if (tags !== undefined) updateData.tags = tags;
     updateData.updatedAt = new Date();
 
     const updatedPost = await Post.findByIdAndUpdate(
@@ -185,7 +221,25 @@ export async function searchPosts(req, res) {
       ]
     });
 
-    res.json(posts);
+    // Get all unique author UUIDs
+    const authorUuids = [...new Set(posts.map(post => post.author))];
+
+    // Fetch user data for these UUIDs
+    const users = await User.find({ uuid: { $in: authorUuids } }, 'uuid name');
+
+    // Create a map of UUID to name
+    const userMap = users.reduce((map, user) => {
+      map[user.uuid] = user.name;
+      return map;
+    }, {});
+
+    // Add author name to each post
+    const postsWithAuthors = posts.map(post => ({
+      ...post.toObject(),
+      author: userMap[post.author] || 'Unknown Author'
+    }));
+
+    res.json(postsWithAuthors);
   } catch (err) {
     console.error('Search posts error:', err);
     res.status(500).json({ error: 'Internal server error' });

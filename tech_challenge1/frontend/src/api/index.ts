@@ -92,12 +92,12 @@ export const postsAPI = {
 
     create: async (data: { title: string; content: string; tags?: string[] }) => {
         const response = await apiClient.post('/posts', data)
-        return response.data
+        return response.data.post
     },
 
     update: async (id: string, data: Partial<{ title: string; content: string; tags?: string[] }>) => {
         const response = await apiClient.put(`/posts/${id}`, data)
-        return response.data
+        return response.data.post
     },
 
     delete: async (id: string) => {

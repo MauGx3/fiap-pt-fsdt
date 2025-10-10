@@ -56,9 +56,10 @@ describe('API client', () => {
 
     it('creates posts successfully', async () => {
         const payload = { title: 'New Post', content: 'Body', tags: ['vite'] }
-        mock.onPost('/posts', payload).reply(201, { id: '1', ...payload })
+        const expectedPost = { _id: '1', ...payload, author: 'test-author', createdAt: '2023-01-01T00:00:00.000Z' }
+        mock.onPost('/posts', payload).reply(201, { message: 'Post created successfully', post: expectedPost })
 
-        await expect(postsAPI.create(payload)).resolves.toMatchObject({ id: '1', title: 'New Post' })
+        await expect(postsAPI.create(payload)).resolves.toMatchObject(expectedPost)
     })
 
     it('cleans up tokens on logout', async () => {
