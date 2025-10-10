@@ -36,7 +36,7 @@ export async function getPostById(req, res) {
     if (typeof req.params.id !== 'string') {
       return res.status(400).json({ error: 'Invalid ID format' });
     }
-    
+
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
@@ -197,18 +197,18 @@ export async function deletePost(req, res) {
 export async function searchPosts(req, res) {
   try {
     const query = req.query.query;
-    
+
     // Validate query parameter
     if (!query) return res.status(400).json({ error: 'Missing query parameter' });
-    
+
     // Validate input type to prevent injection
     if (typeof query !== 'string') {
       return res.status(400).json({ error: 'Invalid query format' });
     }
-    
+
     // Sanitize query - remove regex special characters to prevent ReDoS
     const sanitizedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').toLowerCase();
-    
+
     // Limit query length to prevent excessive processing
     if (sanitizedQuery.length > 100) {
       return res.status(400).json({ error: 'Query too long' });
