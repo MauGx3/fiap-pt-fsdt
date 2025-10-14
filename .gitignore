@@ -108,6 +108,7 @@ Thumbs.db
 .mongodb-memory-server/
 node_modules
 
+.github/copilot-instructions.md
 *.instructions
 .github/instructions
 
