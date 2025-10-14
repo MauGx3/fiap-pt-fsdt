@@ -3,7 +3,21 @@ import User from './models/User.js';
 
 export async function getAllPosts(req, res) {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 });
+    // Fetch posts. Some tests mock Post.find to return a plain array (no .sort),
+    // so avoid chaining .sort directly on the return value. Instead, sort in
+    // JavaScript when necessary to be resilient to both mongoose Query and
+    // mocked return values.
+    let postsResult = await Post.find();
+
+    if (Array.isArray(postsResult)) {
+      // Sort posts by createdAt desc when an array is returned
+      postsResult.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (postsResult && typeof postsResult.sort === 'function') {
+      // If it's a mongoose Query-like object, apply server-side sort
+      postsResult = await postsResult.sort({ createdAt: -1 });
+    }
+
+    const posts = postsResult;
 
     // Get all unique author UUIDs
     const authorUuids = [...new Set(posts.map(post => post.author))];
@@ -17,10 +31,10 @@ export async function getAllPosts(req, res) {
       return map;
     }, {});
 
-    // Add author name to each post
+    // Add authorName to each post but keep author as the UUID
     const postsWithAuthors = posts.map(post => ({
       ...post.toObject(),
-      author: userMap[post.author] || 'Unknown Author'
+      authorName: userMap[post.author] || 'Unknown Author'
     }));
 
     res.json(postsWithAuthors);
@@ -40,11 +54,11 @@ export async function getPostById(req, res) {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    // Get author name
+    // Get author name but keep author as UUID
     const user = await User.findOne({ uuid: post.author }, 'name');
     const postWithAuthor = {
       ...post.toObject(),
-      author: user ? user.name : 'Unknown Author'
+      authorName: user ? user.name : 'Unknown Author'
     };
 
     res.json(postWithAuthor);
@@ -76,9 +90,16 @@ export async function createPost(req, res) {
 
     await newPost.save();
 
+    // Include authorName in the returned post for frontend convenience
+    const authorUser = await User.findOne({ uuid: author }, 'name');
+    const postToReturn = {
+      ...newPost.toObject(),
+      authorName: authorUser ? authorUser.name : 'Unknown Author'
+    };
+
     res.status(201).json({
       message: 'Post created successfully',
-      post: newPost
+      post: postToReturn
     });
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -144,9 +165,16 @@ export async function updatePost(req, res) {
       { new: true, runValidators: true }
     );
 
+    // Attach authorName before returning
+    const authorUser = await User.findOne({ uuid: updatedPost.author }, 'name');
+    const postToReturn = {
+      ...updatedPost.toObject(),
+      authorName: authorUser ? authorUser.name : 'Unknown Author'
+    };
+
     res.json({
       message: 'Post updated successfully',
-      post: updatedPost
+      post: postToReturn
     });
   } catch (err) {
     if (err.name === 'CastError') {
@@ -181,9 +209,16 @@ export async function deletePost(req, res) {
 
     const deletedPost = await Post.findByIdAndDelete(postId);
 
+    // Attach authorName to deleted post for consistency
+    const authorUser = await User.findOne({ uuid: deletedPost.author }, 'name');
+    const postToReturn = {
+      ...deletedPost.toObject(),
+      authorName: authorUser ? authorUser.name : 'Unknown Author'
+    };
+
     res.json({
       message: 'Post deleted successfully',
-      post: deletedPost
+      post: postToReturn
     });
   } catch (err) {
     if (err.name === 'CastError') {
@@ -233,10 +268,10 @@ export async function searchPosts(req, res) {
       return map;
     }, {});
 
-    // Add author name to each post
+    // Add authorName to each post but keep author as the UUID
     const postsWithAuthors = posts.map(post => ({
       ...post.toObject(),
-      author: userMap[post.author] || 'Unknown Author'
+      authorName: userMap[post.author] || 'Unknown Author'
     }));
 
     res.json(postsWithAuthors);
