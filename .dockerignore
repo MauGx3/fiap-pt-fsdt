@@ -1,0 +1,34 @@
+# Ignore node modules from host
+node_modules
+tech_challenge1/backend/node_modules
+tech_challenge1/frontend/node_modules
+
+# Git and metadata
+.git
+.gitignore
+
+# Build artifacts
+dist
+build
+
+# Tests and coverage
+coverage
+**/tests
+**/__tests__
+
+# Editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local environment files
+.env
+.env.*
+
+# Logs
+*.log

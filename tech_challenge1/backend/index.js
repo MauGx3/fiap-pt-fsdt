@@ -5,8 +5,6 @@ import 'dotenv/config';
 import express, { json } from 'express';
 import { connect } from 'mongoose';
 // Dev-only API documentation (Swagger UI)
-import swaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -44,16 +42,20 @@ app.use('/api/users', usersRoutes); // User management routes
 
 // Serve OpenAPI docs in development only
 if (NODE_ENV !== 'production') {
-  try {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const specPath = path.join(__dirname, 'openapi.yaml');
-    const spec = YAML.load(specPath);
-    app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
-    console.log('✅ Swagger UI available at /docs (development only)');
-  } catch (err) {
-    console.warn('⚠️ Could not load OpenAPI spec for Swagger UI:', err.message);
-  }
+  (async () => {
+    try {
+      const { default: swaggerUi } = await import('swagger-ui-express');
+      const YAML = (await import('yamljs')).default;
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const specPath = path.join(__dirname, 'openapi.yaml');
+      const spec = YAML.load(specPath);
+      app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
+      console.log('✅ Swagger UI available at /docs (development only)');
+    } catch (err) {
+      console.warn('⚠️ Could not load OpenAPI spec for Swagger UI:', err.message);
+    }
+  })();
 }
 
 // Health check endpoint
