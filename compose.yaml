@@ -27,6 +27,7 @@ services:
       MONGO_URI: mongodb://mongo:27017/fiap-blog
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your .env file before running docker compose}
       JWT_EXPIRES_IN: 7d
+      ENABLE_SWAGGER_UI: 'true'
     ports:
       - ${BACKEND_PORT:-3000}:3000
     restart: unless-stopped

@@ -111,6 +111,7 @@ node_modules
 .github/copilot-instructions.md
 *.instructions
 .github/instructions
+.github/prompts
 
 # Playwright
 test-results/

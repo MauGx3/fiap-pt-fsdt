@@ -13,6 +13,7 @@ Quick start (development)
 ```fish
 # example (fish shell)
 set -x JWT_SECRET "your_jwt_secret_here"
+set -x ENABLE_SWAGGER_UI "true"
 set -x MONGO_INITDB_ROOT_USERNAME ""
 set -x MONGO_INITDB_ROOT_PASSWORD ""
 ```
@@ -33,6 +34,7 @@ docker compose -f compose.yaml logs backend --follow
 
 Why this Dockerfile was refactored
 - Multi-stage build: we separate dependency installation into stages to keep the final image small and free of build/dev tooling.
+- `ENABLE_SWAGGER_UI=true` exposes Swagger docs even when `NODE_ENV=production` (use with caution in public environments).
 - Pinning base image: using `node:22-alpine` (explicit version) improves reproducibility compared to `node:lts-alpine`.
 - Non-root runtime: we create `appuser` and run the app as non-root for reduced attack surface.
 

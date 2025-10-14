@@ -19,6 +19,8 @@ import authRoutes from './routes/auth.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const ENABLE_SWAGGER_UI = process.env.ENABLE_SWAGGER_UI === 'true';
+const shouldExposeDocs = NODE_ENV !== 'production' || ENABLE_SWAGGER_UI;
 
 // CORS middleware
 app.use((req, res, next) => {
@@ -40,8 +42,10 @@ app.use('/api/auth', authRoutes); // Authentication routes
 app.use('/api/posts', postsRoutes); // Posts routes
 app.use('/api/users', usersRoutes); // User management routes
 
-// Serve OpenAPI docs in development only
-if (NODE_ENV !== 'production') {
+// Serve OpenAPI docs in development or when explicitly enabled
+if (shouldExposeDocs) {
+  const swaggerRouter = express.Router();
+  app.use('/docs', swaggerRouter);
   (async () => {
     try {
       const { default: swaggerUi } = await import('swagger-ui-express');
@@ -50,8 +54,8 @@ if (NODE_ENV !== 'production') {
       const __dirname = path.dirname(__filename);
       const specPath = path.join(__dirname, 'openapi.yaml');
       const spec = YAML.load(specPath);
-      app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
-      console.log('✅ Swagger UI available at /docs (development only)');
+      swaggerRouter.use(swaggerUi.serve, swaggerUi.setup(spec));
+      console.log('✅ Swagger UI available at /docs');
     } catch (err) {
       console.warn('⚠️ Could not load OpenAPI spec for Swagger UI:', err.message);
     }
