@@ -1,0 +1,311 @@
+openapi: 3.0.3
+info:
+  title: FIAP Blog API
+  version: 1.0.0
+  description: Minimal OpenAPI spec for the FIAP blog backend (auth + posts). This file is a starting point for Swagger UI / codegen and documents the core endpoints used in tests and the frontend.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+              examples:
+                created:
+                  value:
+                    message: "User created successfully"
+                    user:
+                      uuid: "123e4567-e89b-12d3-a456-426614174000"
+                      name: "Test User"
+                      email: "test@example.com"
+        '400':
+          description: Validation error
+  /api/auth/login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Logged in; returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  message:
+                    type: string
+              examples:
+                success:
+                  value:
+                    token: "eyJhbGciOiJI..."
+                    message: "Login successful"
+        '401':
+          description: Invalid credentials
+  /api/posts:
+    get:
+      summary: Get all posts
+      responses:
+        '200':
+          description: Array of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      summary: Create a new post (authenticated)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, content]
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Post created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  post:
+                    $ref: '#/components/schemas/Post'
+              examples:
+                created:
+                  value:
+                    message: "Post created successfully"
+                    post:
+                      _id: "650b1b2e0b0f1c0012345678"
+                      title: "Test Post Title"
+                      content: "This is test post content."
+                      tags: ["test"]
+                      author: "823bbd7b-f7b8-4410-8d81-f2a1d7ec2a8a"
+                      authorName: "Test User"
+                      createdAt: "2025-10-14T00:00:00.000Z"
+  /api/posts/{id}:
+    get:
+      summary: Get post by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              examples:
+                example:
+                  value:
+                    _id: "650b1b2e0b0f1c0012345678"
+                    title: "Test Post Title"
+                    content: "This is test post content."
+                    tags: ["test"]
+                    author: "823bbd7b-f7b8-4410-8d81-f2a1d7ec2a8a"
+                    authorName: "Test User"
+                    createdAt: "2025-10-14T00:00:00.000Z"
+        '404':
+          description: Not found
+    put:
+      summary: Update a post (authenticated, owner or admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Post updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  post:
+                    $ref: '#/components/schemas/Post'
+              examples:
+                updated:
+                  value:
+                    message: "Post updated successfully"
+                    post:
+                      _id: "650b1b2e0b0f1c0012345678"
+                      title: "Updated Title"
+                      content: "Updated content"
+                      tags: []
+                      author: "823bbd7b-f7b8-4410-8d81-f2a1d7ec2a8a"
+                      authorName: "Test User"
+                      updatedAt: "2025-10-14T01:00:00.000Z"
+        '403':
+          description: Forbidden
+    delete:
+      summary: Delete a post (authenticated, owner or admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Post deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  post:
+                    $ref: '#/components/schemas/Post'
+              examples:
+                deleted:
+                  value:
+                    message: "Post deleted successfully"
+                    post:
+                      _id: "650b1b2e0b0f1c0012345678"
+                      title: "Test Post Title"
+                      content: "This is test post content."
+                      author: "823bbd7b-f7b8-4410-8d81-f2a1d7ec2a8a"
+                      authorName: "Test User"
+  /api/users/{uuid}:
+    get:
+      summary: Get user by uuid
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [user, admin]
+    Post:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        author:
+          type: string
+          description: UUID of the author
+        authorName:
+          type: string
+          description: Human readable author name (optional)
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

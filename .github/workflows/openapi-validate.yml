@@ -1,0 +1,23 @@
+name: Validate OpenAPI spec
+
+on:
+  pull_request:
+    paths:
+      - 'tech_challenge1/backend/openapi.yaml'
+      - '.github/**'
+
+jobs:
+  validate-openapi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate OpenAPI spec
+        run: |
+          npm install -g @redocly/openapi-cli@1.0.0 || true
+          if command -v openapi lint >/dev/null 2>&1; then
+            openapi lint tech_challenge1/backend/openapi.yaml || exit 1
+          else
+            npx @redocly/openapi-cli lint tech_challenge1/backend/openapi.yaml || exit 1
+          fi
