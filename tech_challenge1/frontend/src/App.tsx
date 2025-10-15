@@ -37,7 +37,7 @@ const Global = createGlobalStyle<{ theme: any }>`
 `
 
 export default function App(): JSX.Element {
-  const { theme, toggle } = useTheme()
+  const { theme } = useTheme()
 
   useEffect(() => {
     console.log('App mounted')
@@ -49,9 +49,6 @@ export default function App(): JSX.Element {
         <Global theme={theme} />
         <div className="app">
           <Header />
-          <div className="toolbar">
-            <button onClick={toggle}>Toggle theme</button>
-          </div>
           <Routes>
             <Route path="/" element={<Main />} />
             <Route path="/login" element={<Login />} />

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { authAPI, isAuthenticated, getToken, setToken, removeToken } from '../api'
 
 interface User {
-    id: string
+    uuid: string
     name: string
     email: string
     role: string
@@ -40,11 +40,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const checkAuth = async () => {
             if (isAuthenticated()) {
                 try {
-                    const userData = await authAPI.verify()
-                    setUser(userData)
+                    const response = await authAPI.verify()
+                    if (response?.user) {
+                        setUser(response.user)
+                    } else {
+                        setUser(null)
+                    }
                 } catch (error) {
                     // Token is invalid, remove it
                     removeToken()
+                    setUser(null)
                 }
             }
             setIsLoading(false)

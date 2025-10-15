@@ -55,7 +55,7 @@ describe('App integration', () => {
 
         await waitFor(() => expect(screen.getByTestId('theme-name')).toHaveTextContent(/light/i))
 
-        await user.click(screen.getByRole('button', { name: /toggle theme/i }))
+        await user.click(screen.getByRole('button', { name: /alternar para tema/i }))
 
         await waitFor(() => expect(screen.getByTestId('theme-name')).toHaveTextContent(/dark/i))
     })
