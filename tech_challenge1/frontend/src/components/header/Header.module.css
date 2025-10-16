@@ -9,10 +9,13 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 16px;
+  box-sizing: border-box;
+  overflow-x: hidden; /* prevent horizontal scroll when items try to overflow */
 }
 
 .brand {
   flex: 0 1 auto;
+  min-width: 0; /* allow brand to shrink on small viewports */
 }
 
 .header h1 {
@@ -28,6 +31,7 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   flex: 1 1 320px;
+  min-width: 0; /* allow nav to shrink inside flex container */
 }
 
 .nav button,
@@ -45,6 +49,10 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
+  flex-shrink: 1; /* allow buttons/links to shrink when necessary */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .nav button:hover,
@@ -64,7 +72,7 @@
   color: var(--text-muted);
   font-size: 0.9rem;
   margin-right: 0;
-  white-space: normal;
+  white-space: nowrap; /* keep user info concise to a single line */
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -104,6 +112,13 @@
   .nav {
     width: 100%;
     justify-content: flex-start;
+    gap: 8px;
+  }
+  .nav button,
+  .nav a,
+  .themeButton {
+    padding: 6px 10px;
+    font-size: 0.9rem;
   }
 }
 
