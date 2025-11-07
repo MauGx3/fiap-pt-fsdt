@@ -16,7 +16,7 @@ interface Post {
 }
 
 export default function Main() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -24,6 +24,10 @@ export default function Main() {
   const [newPost, setNewPost] = useState({ title: '', content: '', tags: '' })
   const [editingPostId, setEditingPostId] = useState<string | null>(null)
   const [editPost, setEditPost] = useState({ title: '', content: '', tags: '' })
+
+  const canEditPost = (post: Post) => {
+    return user && (user.uuid === post.author || user.role === 'admin')
+  }
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -221,7 +225,7 @@ export default function Main() {
                         ))}
                       </div>
                     )}
-                    {isAuthenticated && (
+                    {isAuthenticated && canEditPost(post) && (
                       <>
                         <button
                           className={styles.editButton}

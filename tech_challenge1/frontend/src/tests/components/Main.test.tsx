@@ -4,11 +4,16 @@ import userEvent from '@testing-library/user-event'
 import Main from '../../components/main/Main'
 import { renderWithProviders } from '../utils'
 import toast from 'react-hot-toast'
-import { postsAPI } from '../../api'
-import { AuthProvider } from '../../contexts/AuthContext'
-import { ThemeProvider } from '../../theme/ThemeContext'
-import { MemoryRouter } from 'react-router-dom'
+import { postsAPI, authAPI } from '../../api'
 import React from 'react'
+import { useAuth } from '../../contexts/AuthContext'
+
+// Mock useAuth before importing the component
+vi.mock('../../contexts/AuthContext', () => ({
+    useAuth: vi.fn()
+}))
+
+const mockUseAuth = vi.mocked(useAuth)
 
 vi.mock('../../api', () => ({
     postsAPI: {
@@ -17,15 +22,14 @@ vi.mock('../../api', () => ({
         update: vi.fn(),
         delete: vi.fn()
     },
+    authAPI: {
+        login: vi.fn(),
+        register: vi.fn(),
+        logout: vi.fn(),
+        verify: vi.fn(),
+        isAuthenticated: vi.fn()
+    },
     isAuthenticated: vi.fn(() => true)
-}))
-
-vi.mock('../../contexts/AuthContext', () => ({
-    useAuth: () => ({
-        isAuthenticated: true,
-        user: { id: '1', name: 'Test User', email: 'test@example.com', role: 'user' }
-    }),
-    AuthProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="auth-provider">{children}</div>
 }))
 
 const postsAPIMock = postsAPI as unknown as {
@@ -33,23 +37,57 @@ const postsAPIMock = postsAPI as unknown as {
     create: ReturnType<typeof vi.fn>
     update: ReturnType<typeof vi.fn>
     delete: ReturnType<typeof vi.fn>
-}
+};
 
+const authAPIMock = authAPI as unknown as {
+    verify: ReturnType<typeof vi.fn>
+    isAuthenticated: ReturnType<typeof vi.fn>
+};
+
+// Helper function to create auth context values
+const createAuthContext = (overrides: Partial<{ user: any; isAuthenticated: boolean; isLoading: boolean }>) => ({
+    user: overrides.user || null,
+    isAuthenticated: overrides.isAuthenticated ?? false,
+    isLoading: overrides.isLoading ?? false,
+    login: vi.fn(),
+    register: vi.fn(),
+    logout: vi.fn()
+});
+
+// Custom render function with auth context
 const renderWithAuth = (ui: React.ReactElement) => {
-    return renderWithProviders(
-        <AuthProvider>
-            {ui}
-        </AuthProvider>
-    )
+    return renderWithProviders(ui)
 }
 
 describe('Main component', () => {
+    beforeEach(() => {
+        // Set default mock return value
+        mockUseAuth.mockReturnValue({
+            isAuthenticated: true,
+            user: { uuid: 'author-uuid', name: 'Test User', email: 'test@example.com', role: 'user' },
+            isLoading: false,
+            login: vi.fn(),
+            register: vi.fn(),
+            logout: vi.fn()
+        })
+
+        // Reset mocks
+        postsAPIMock.getAll.mockClear()
+        postsAPIMock.create.mockClear()
+        postsAPIMock.update.mockClear()
+        postsAPIMock.delete.mockClear()
+    })
     beforeEach(() => {
         ; (toast as unknown as ReturnType<typeof vi.fn>).mockClear()
             ; (toast.success as unknown as ReturnType<typeof vi.fn>).mockClear()
             ; (toast.error as unknown as ReturnType<typeof vi.fn>).mockClear()
         postsAPIMock.getAll.mockReset()
         postsAPIMock.create.mockReset()
+        authAPIMock.verify.mockReset()
+        authAPIMock.isAuthenticated.mockReset()
+        // Set default mocks
+        authAPIMock.verify.mockResolvedValue({ user: { uuid: 'author-uuid', name: 'Test User', email: 'test@example.com', role: 'user' } })
+        authAPIMock.isAuthenticated.mockReturnValue(true)
     })
 
     it('renders posts returned by the API', async () => {
@@ -110,6 +148,8 @@ describe('Main component', () => {
 
         await waitFor(() => expect(postsAPIMock.getAll).toHaveBeenCalled())
 
+        await waitFor(() => expect(screen.getByRole('button', { name: /create post/i })).toBeInTheDocument())
+
         await user.click(screen.getByRole('button', { name: /create post/i }))
         const titleInput = screen.getByPlaceholderText(/post title/i)
         const contentTextarea = screen.getByPlaceholderText(/post content/i)
@@ -130,5 +170,115 @@ describe('Main component', () => {
         expect(await screen.findByText('Brand New')).toBeInTheDocument()
         expect(screen.getByText(/created from the form/i)).toBeVisible()
         expect(toast.success).toHaveBeenCalledWith('Post created successfully!')
+    })
+
+    it('shows edit and delete buttons for post author', async () => {
+        const posts = [
+            {
+                _id: '1',
+                title: 'My Post',
+                content: 'Content',
+                author: 'author-uuid', // matches user.uuid
+                tags: [],
+                createdAt: new Date().toISOString()
+            }
+        ]
+        postsAPIMock.getAll.mockResolvedValue(posts)
+
+        renderWithAuth(<Main />)
+
+        await waitFor(() => expect(postsAPIMock.getAll).toHaveBeenCalled())
+
+        expect(screen.getByText('My Post')).toBeInTheDocument()
+        await waitFor(() => expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument())
+        expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument()
+    })
+
+    it('shows edit and delete buttons for admin user', async () => {
+        mockUseAuth.mockReturnValue({
+            isAuthenticated: true,
+            user: { uuid: 'admin-uuid', name: 'Admin User', email: 'admin@example.com', role: 'admin' },
+            isLoading: false,
+            login: vi.fn(),
+            register: vi.fn(),
+            logout: vi.fn()
+        })
+
+        const posts = [
+            {
+                _id: '1',
+                title: 'Someone Else Post',
+                content: 'Content',
+                author: 'other-uuid', // different from user.uuid
+                tags: [],
+                createdAt: new Date().toISOString()
+            }
+        ]
+        postsAPIMock.getAll.mockResolvedValue(posts)
+
+        renderWithAuth(<Main />)
+
+        await waitFor(() => expect(postsAPIMock.getAll).toHaveBeenCalled())
+
+        expect(screen.getByText('Someone Else Post')).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument()
+    })
+
+    it('hides edit and delete buttons for non-owner non-admin user', async () => {
+        const posts = [
+            {
+                _id: '1',
+                title: 'Someone Else Post',
+                content: 'Content',
+                author: 'other-uuid', // different from user.uuid
+                tags: [],
+                createdAt: new Date().toISOString()
+            }
+        ]
+        postsAPIMock.getAll.mockResolvedValue(posts)
+
+        renderWithAuth(<Main />)
+
+        await waitFor(() => expect(postsAPIMock.getAll).toHaveBeenCalled())
+
+        // Wait for auth to complete - create button should appear for authenticated user
+        await waitFor(() => expect(screen.getByRole('button', { name: /create post/i })).toBeInTheDocument())
+
+        expect(screen.getByText('Someone Else Post')).toBeInTheDocument()
+        expect(screen.queryByRole('button', { name: /edit/i })).not.toBeInTheDocument()
+        expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument()
+    })
+
+    it('hides edit and delete buttons for unauthenticated user', async () => {
+        mockUseAuth.mockReturnValue({
+            isAuthenticated: false,
+            user: null,
+            isLoading: false,
+            login: vi.fn(),
+            register: vi.fn(),
+            logout: vi.fn()
+        })
+
+        const posts = [
+            {
+                _id: '1',
+                title: 'Post',
+                content: 'Content',
+                author: 'author-uuid',
+                tags: [],
+                createdAt: new Date().toISOString()
+            }
+        ]
+        postsAPIMock.getAll.mockResolvedValue(posts)
+
+        renderWithAuth(<Main />)
+
+        await waitFor(() => expect(postsAPIMock.getAll).toHaveBeenCalled())
+
+        expect(screen.getByText('Post')).toBeInTheDocument()
+        expect(screen.queryByRole('button', { name: /create post/i })).not.toBeInTheDocument()
+        expect(screen.queryByRole('button', { name: /edit/i })).not.toBeInTheDocument()
+        expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument()
     })
 })
